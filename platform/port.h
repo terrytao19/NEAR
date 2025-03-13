@@ -52,18 +52,6 @@ void port_set_deca_isr(port_deca_isr_t deca_isr);
 
 #define BUF_SIZE    (64)
 
-#define USB_SUPPORT
-
-typedef struct
-{
-    uint16_t        usblen;                 /**< for RX from USB */
-    uint8_t         usbbuf[BUF_SIZE*3];     /**< for RX from USB */
-}__packed app_t;
-
-
-extern app_t    app;
-
-
 /*****************************************************************************************************************//*
 **/
 
@@ -85,55 +73,16 @@ typedef int64_t         int64 ;
 #define TRUE                1
 #endif
 
-typedef enum
-{
-    LED_PC6, //LED5
-    LED_PC7, //LED6
-    LED_PC8, //LED7
-    LED_PC9, //LED8
-    LED_ALL,
-    LEDn
-} led_t;
-
 /****************************************************************************//**
  *
  *                              MACRO
  *
  *******************************************************************************/
 
-
-#if !(EXTI9_5_IRQn)
-#define DECAIRQ_EXTI_IRQn       (23)
-#else
-#define DECAIRQ_EXTI_IRQn       (EXTI9_5_IRQn)
-#endif
-
-#if !(EXTI0_IRQn)
-#define EXTI0_IRQn      (6)
-#endif
-
-
-
-#define DW1000_RSTn                 DW_RESET_Pin
-#define DW1000_RSTn_GPIO            DW_RESET_GPIO_Port
-
+#define DECAIRQ_EXTI_IRQn           EXTI4_15_IRQn
 
 #define DECAIRQ                     DW_IRQn_Pin
 #define DECAIRQ_GPIO                DW_IRQn_GPIO_Port
-
-#define TA_BOOT1                    GPIO_PIN_2
-#define TA_BOOT1_GPIO               GPIOB
-
-#define TA_RESP_DLY                 GPIO_PIN_0
-#define TA_RESP_DLY_GPIO            GPIOC
-
-#define TA_SW1_3                    GPIO_PIN_0
-#define TA_SW1_4                    GPIO_PIN_1
-#define TA_SW1_5                    GPIO_PIN_2
-#define TA_SW1_6                    GPIO_PIN_3
-#define TA_SW1_7                    GPIO_PIN_4
-#define TA_SW1_8                    GPIO_PIN_5
-#define TA_SW1_GPIO                 GPIOC
 
 /****************************************************************************//**
  *
@@ -150,10 +99,6 @@ typedef enum
 #define port_SPIx_set_chip_select()     HAL_GPIO_WritePin(DW_NSS_GPIO_Port, DW_NSS_Pin, GPIO_PIN_SET)
 #define port_SPIx_clear_chip_select()   HAL_GPIO_WritePin(DW_NSS_GPIO_Port, DW_NSS_Pin, GPIO_PIN_RESET)
 
-/* NSS pin is SW controllable */
-#define port_SPIy_set_chip_select()     HAL_GPIO_WritePin(LCD_NSS_GPIO_Port, LCD_NSS_Pin, GPIO_PIN_SET)
-#define port_SPIy_clear_chip_select()   HAL_GPIO_WritePin(LCD_NSS_GPIO_Port, LCD_NSS_Pin, GPIO_PIN_RESET)
-
 /****************************************************************************//**
  *
  *                              port function prototypes
@@ -163,15 +108,7 @@ typedef enum
 void Sleep(uint32_t Delay);
 unsigned long portGetTickCnt(void);
 
-#define S1_SWITCH_ON  (1)
-#define S1_SWITCH_OFF (0)
-//when switch (S1) is 'on' the pin is low
-int port_is_boot1_on(uint16_t x);
-int port_is_switch_on(uint16_t GPIOpin);
-int port_is_boot1_low(void);
-
 void port_wakeup_dw1000(void);
-void port_wakeup_dw1000_fast(void);
 
 void port_set_dw1000_slowrate(void);
 void port_set_dw1000_fastrate(void);
@@ -179,21 +116,8 @@ void port_set_dw1000_fastrate(void);
 void process_dwRSTn_irq(void);
 void process_deca_irq(void);
 
-void led_on(led_t led);
-void led_off(led_t led);
-
 int  peripherals_init(void);
 void spi_peripheral_init(void);
-
-void setup_DW1000RSTnIRQ(int enable);
-
-void reset_DW1000(void);
-
-
-void port_LCD_RS_set(void);
-void port_LCD_RS_clear(void);
-void port_LCD_RW_set(void);
-void port_LCD_RW_clear(void);
 
 ITStatus EXTI_GetITEnStatus(uint32_t x);
 

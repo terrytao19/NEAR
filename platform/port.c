@@ -138,163 +138,6 @@ ITStatus EXTI_GetITEnStatus(uint32_t x)
  *
  *******************************************************************************/
 
-/* @fn      reset_DW1000
- * @brief   DW_RESET pin on DW1000 has 2 functions
- *          In general it is output, but it also can be used to reset the digital
- *          part of DW1000 by driving this pin low.
- *          Note, the DW_RESET pin should not be driven high externally.
- * */
-void reset_DW1000(void)
-{
-    GPIO_InitTypeDef    GPIO_InitStruct;
-
-    // Enable GPIO used for DW1000 reset as open collector output
-    GPIO_InitStruct.Pin = DW_RESET_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(DW_RESET_GPIO_Port, &GPIO_InitStruct);
-
-    //drive the RSTn pin low
-    HAL_GPIO_WritePin(DW_RESET_GPIO_Port, DW_RESET_Pin, GPIO_PIN_RESET);
-
-    usleep(1);
-
-    //put the pin back to output open-drain (not active)
-    setup_DW1000RSTnIRQ(0);
-
-
-
-    Sleep(2);
-}
-
-/* @fn      setup_DW1000RSTnIRQ
- * @brief   setup the DW_RESET pin mode
- *          0 - output Open collector mode
- *          !0 - input mode with connected EXTI0 IRQ
- * */
-void setup_DW1000RSTnIRQ(int enable)
-{
-    GPIO_InitTypeDef GPIO_InitStruct;
-
-    if(enable)
-    {
-        // Enable GPIO used as DECA RESET for interrupt
-        GPIO_InitStruct.Pin = DW_RESET_Pin;
-        GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-        GPIO_InitStruct.Pull = GPIO_NOPULL;
-        HAL_GPIO_Init(DW_RESET_GPIO_Port, &GPIO_InitStruct);
-
-        HAL_NVIC_EnableIRQ(EXTI0_IRQn);     //pin #0 -> EXTI #0
-        HAL_NVIC_SetPriority(EXTI0_IRQn, 5, 0);
-    }
-    else
-    {
-        HAL_NVIC_DisableIRQ(EXTI0_IRQn);    //pin #0 -> EXTI #0
-
-        //put the pin back to tri-state ... as
-        //output open-drain (not active)
-        GPIO_InitStruct.Pin = DW_RESET_Pin;
-        GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
-        GPIO_InitStruct.Pull = GPIO_NOPULL;
-        GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-        HAL_GPIO_Init(DW_RESET_GPIO_Port, &GPIO_InitStruct);
-        HAL_GPIO_WritePin(DW_RESET_GPIO_Port, DW_RESET_Pin, GPIO_PIN_SET);
-    }
-}
-
-
-/* @fn      port_is_boot1_low
- * @brief   check the BOOT1 pin status.
- * @return  1 if ON and 0 for OFF
- * */
-int port_is_boot1_low(void)
-{
-    return ((GPIO_ReadInputDataBit(TA_BOOT1_GPIO, TA_BOOT1))?(0):(1));
-}
-
-/* @fn      port_is_boot1_low
- * @brief   check the BOOT1 pin status.
- * @return  1 if ON and 0 for OFF
- * */
-int port_is_boot1_on(uint16_t x)
-{
-    return ((GPIO_ReadInputDataBit(TA_BOOT1_GPIO, TA_BOOT1))?(0):(1));
-}
-
-/* @fn      port_is_switch_on
- * @brief   check the switch status.
- *          when switch (S1) is 'on' the pin is low
- * @return  1 if ON and 0 for OFF
- * */
-int port_is_switch_on(uint16_t GPIOpin)
-{
-    return ((GPIO_ReadInputDataBit(TA_SW1_GPIO, GPIOpin))?(0):(1));
-}
-
-
-/* @fn      led_off
- * @brief   switch off the led from led_t enumeration
- * */
-void led_off (led_t led)
-{
-    switch (led)
-    {
-    case LED_PC6:
-        GPIO_ResetBits(LED5_GPIO_Port, LED5_Pin);
-        break;
-    case LED_PC7:
-        GPIO_ResetBits(LED6_GPIO_Port, LED6_Pin);
-        break;
-    case LED_PC8:
-        GPIO_ResetBits(LED7_GPIO_Port, LED7_Pin);
-        break;
-    case LED_PC9:
-        GPIO_ResetBits(LED8_GPIO_Port, LED8_Pin);
-        break;
-    case LED_ALL:
-        GPIO_ResetBits(LED5_GPIO_Port, LED5_Pin);
-        GPIO_ResetBits(LED6_GPIO_Port, LED6_Pin);
-        GPIO_ResetBits(LED7_GPIO_Port, LED7_Pin);
-        GPIO_ResetBits(LED8_GPIO_Port, LED8_Pin);
-        break;
-    default:
-        // do nothing for undefined led number
-        break;
-    }
-}
-
-/* @fn      led_on
- * @brief   switch on the led from led_t enumeration
- * */
-void led_on (led_t led)
-{
-    switch (led)
-    {
-    case LED_PC6:
-        GPIO_SetBits(LED5_GPIO_Port, LED5_Pin);
-        break;
-    case LED_PC7:
-        GPIO_SetBits(LED6_GPIO_Port, LED6_Pin);
-        break;
-    case LED_PC8:
-        GPIO_SetBits(LED7_GPIO_Port, LED7_Pin);
-        break;
-    case LED_PC9:
-        GPIO_SetBits(LED8_GPIO_Port, LED8_Pin);
-        break;
-    case LED_ALL:
-        GPIO_SetBits(LED5_GPIO_Port, LED5_Pin);
-        GPIO_SetBits(LED6_GPIO_Port, LED6_Pin);
-        GPIO_SetBits(LED7_GPIO_Port, LED7_Pin);
-        GPIO_SetBits(LED8_GPIO_Port, LED8_Pin);
-        break;
-    default:
-        // do nothing for undefined led number
-        break;
-    }
-}
-
-
 /* @fn      port_wakeup_dw1000
  * @brief   "slow" waking up of DW1000 using DW_CS only
  * */
@@ -306,46 +149,13 @@ void port_wakeup_dw1000(void)
     Sleep(7);                       //wait 7ms for DW1000 XTAL to stabilise
 }
 
-/* @fn      port_wakeup_dw1000_fast
- * @brief   waking up of DW1000 using DW_CS and DW_RESET pins.
- *          The DW_RESET signalling that the DW1000 is in the INIT state.
- *          the total fast wakeup takes ~2.2ms and depends on crystal startup time
- * */
-void port_wakeup_dw1000_fast(void)
-{
-    #define WAKEUP_TMR_MS   (10)
-
-    uint32_t x = 0;
-    uint32_t timestamp = HAL_GetTick(); //protection
-
-    setup_DW1000RSTnIRQ(0);         //disable RSTn IRQ
-    signalResetDone = 0;            //signalResetDone connected to RST_PIN_IRQ
-    setup_DW1000RSTnIRQ(1);         //enable RSTn IRQ
-    port_SPIx_clear_chip_select();  //CS low
-
-    //need to poll to check when the DW1000 is in the IDLE, the CPLL interrupt is not reliable
-    //when RSTn goes high the DW1000 is in INIT, it will enter IDLE after PLL lock (in 5 us)
-    while((signalResetDone == 0) && \
-          ((HAL_GetTick() - timestamp) < WAKEUP_TMR_MS))
-    {
-        x++;     //when DW1000 will switch to an IDLE state RSTn pin will high
-    }
-    setup_DW1000RSTnIRQ(0);         //disable RSTn IRQ
-    port_SPIx_set_chip_select();    //CS high
-
-    //it takes ~35us in total for the DW1000 to lock the PLL, download AON and go to IDLE state
-    usleep(35);
-}
-
-
-
 /* @fn      port_set_dw1000_slowrate
  * @brief   set 2.25MHz
  *          note: hspi1 is clocked from 72MHz
  * */
 void port_set_dw1000_slowrate(void)
 {
-    hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;
+    hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
     HAL_SPI_Init(&hspi1);
 }
 
@@ -355,40 +165,8 @@ void port_set_dw1000_slowrate(void)
  * */
 void port_set_dw1000_fastrate(void)
 {
-    hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
+    hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
     HAL_SPI_Init(&hspi1);
-}
-
-/* @fn      port_LCD_RS_set
- * @brief   wrapper to set LCD_RS pin
- * */
-void port_LCD_RS_set(void)
-{
-    HAL_GPIO_WritePin(LCD_RS_GPIO_Port, LCD_RS_Pin, GPIO_PIN_SET);
-}
-
-/* @fn      port_LCD_RS_clear
- * @brief   wrapper to clear LCD_RS pin
- * */
-void port_LCD_RS_clear(void)
-{
-    HAL_GPIO_WritePin(LCD_RS_GPIO_Port, LCD_RS_Pin, GPIO_PIN_RESET);
-}
-
-/* @fn      port_LCD_RW_clear
- * @brief   wrapper to set LCD_RW pin
- * */
-void port_LCD_RW_set(void)
-{
-    HAL_GPIO_WritePin(LCD_RW_GPIO_Port, LCD_RW_Pin, GPIO_PIN_SET);
-}
-
-/* @fn      port_LCD_RW_clear
- * @brief   wrapper to clear LCD_RW pin
- * */
-void port_LCD_RW_clear(void)
-{
-    HAL_GPIO_WritePin(LCD_RW_GPIO_Port, LCD_RW_Pin, GPIO_PIN_RESET);
 }
 
 /****************************************************************************//**

@@ -59,6 +59,14 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define E5_NRST_Pin GPIO_PIN_0
 #define E5_NRST_GPIO_Port GPIOA
+#define DW_NSS_Pin GPIO_PIN_4
+#define DW_NSS_GPIO_Port GPIOA
+#define DW_SCK_Pin GPIO_PIN_5
+#define DW_SCK_GPIO_Port GPIOA
+#define DW_MISO_Pin GPIO_PIN_6
+#define DW_MISO_GPIO_Port GPIOA
+#define DW_MOSI_Pin GPIO_PIN_7
+#define DW_MOSI_GPIO_Port GPIOA
 #define VBATT_ADC_Pin GPIO_PIN_0
 #define VBATT_ADC_GPIO_Port GPIOB
 #define SCREEN_EN_Pin GPIO_PIN_2
@@ -69,8 +77,9 @@ void Error_Handler(void);
 #define TFT_CS_GPIO_Port GPIOB
 #define BTN_DISP_Pin GPIO_PIN_13
 #define BTN_DISP_GPIO_Port GPIOB
-#define IRQ_Pin GPIO_PIN_5
-#define IRQ_GPIO_Port GPIOB
+#define DW_IRQn_Pin GPIO_PIN_5
+#define DW_IRQn_GPIO_Port GPIOB
+#define DW_IRQn_EXTI_IRQn EXTI4_15_IRQn
 #define WAKE_Pin GPIO_PIN_6
 #define WAKE_GPIO_Port GPIOB
 #define TFT_DC_Pin GPIO_PIN_8
