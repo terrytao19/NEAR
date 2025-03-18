@@ -141,6 +141,19 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
+  * @brief This function handles RCC and CRS global interrupts.
+  */
+void RCC_CRS_IRQHandler(void)
+{
+  /* USER CODE BEGIN RCC_CRS_IRQn 0 */
+
+  /* USER CODE END RCC_CRS_IRQn 0 */
+  /* USER CODE BEGIN RCC_CRS_IRQn 1 */
+
+  /* USER CODE END RCC_CRS_IRQn 1 */
+}
+
+/**
   * @brief This function handles EXTI line 4 to 15 interrupts.
   */
 void EXTI4_15_IRQHandler(void)

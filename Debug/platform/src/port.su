@@ -1,0 +1,16 @@
+../Drivers/CMSIS/Include/core_cm0.h:623:22:__NVIC_EnableIRQ	16	static
+../Drivers/CMSIS/Include/core_cm0.h:659:22:__NVIC_DisableIRQ	16	static,ignoring_inline_asm
+../platform/src/port.c:46:1:portGetTickCnt	8	static
+../platform/src/port.c:56:5:usleep	24	static,ignoring_inline_asm
+../platform/src/port.c:77:1:Sleep	16	static
+../platform/src/port.c:101:10:EXTI_GetITEnStatus	16	static
+../platform/src/port.c:121:6:port_wakeup_dw1000	8	static
+../platform/src/port.c:133:6:port_set_dw1000_slowrate	8	static
+../platform/src/port.c:143:6:port_set_dw1000_fastrate	8	static
+../platform/src/port.c:170:6:HAL_GPIO_EXTI_Callback	16	static
+../platform/src/port.c:183:15:process_deca_irq	8	static
+../platform/src/port.c:198:15:port_DisableEXT_IRQ	8	static
+../platform/src/port.c:207:15:port_EnableEXT_IRQ	8	static
+../platform/src/port.c:216:19:port_GetEXT_IRQStatus	8	static
+../platform/src/port.c:225:19:port_CheckEXT_IRQ	8	static
+../platform/src/port.c:269:6:port_set_deca_isr	24	static

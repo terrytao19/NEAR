@@ -11,12 +11,13 @@
  * @author DecaWave
  */
 
+#include "main.h"
 #include "deca_spi.h"
 #include "deca_device_api.h"
 #include "port.h"
-#include "stm32f1xx_hal_def.h"
+#include "stm32f0xx_hal_def.h"
 
-extern  SPI_HandleTypeDef hspi1;    /*clocked from 72MHz*/
+extern  SPI_HandleTypeDef hspi1;    /*clocked from 36MHz*/
 
 /****************************************************************************//**
  *

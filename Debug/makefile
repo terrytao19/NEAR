@@ -9,8 +9,12 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
+-include platform/src/subdir.mk
+-include decadriver/src/subdir.mk
 -include Drivers/STM32F0xx_HAL_Driver/Src/subdir.mk
 -include Core/Startup/subdir.mk
+-include Core/Src/ex_05b_ds_twr_resp/subdir.mk
+-include Core/Src/ex_05a_ds_twr_init/subdir.mk
 -include Core/Src/subdir.mk
 -include objects.mk
 

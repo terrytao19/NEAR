@@ -13,8 +13,8 @@
 
 #include "port.h"
 #include "deca_device_api.h"
-#include "stm32f1xx_hal_conf.h"
-#include "usbd_cdc_if.h"
+#include "stm32f0xx_hal_conf.h"
+#include <sys/types.h>
 
 /****************************************************************************//**
  *
@@ -91,29 +91,6 @@ Sleep(uint32_t x)
  *
  *******************************************************************************/
 
-/* @fn    peripherals_init
- * */
-int peripherals_init (void)
-{
-    /* All has been initialized in the CubeMx code, see main.c */
-    return 0;
-}
-
-
-/* @fn    spi_peripheral_init
- * */
-void spi_peripheral_init()
-{
-
-    /* SPI's has been initialized in the CubeMx code, see main.c */
-
-    port_LCD_RS_clear();
-
-    port_LCD_RW_clear();
-}
-
-
-
 /**
   * @brief  Checks whether the specified EXTI line is enabled or not.
   * @param  EXTI_Line: specifies the EXTI line to check.
@@ -183,22 +160,18 @@ void port_set_dw1000_fastrate(void)
  *
  *******************************************************************************/
 
+/* DW1000 IRQ handler declaration. */
+port_deca_isr_t port_deca_isr;
+
 /* @fn      HAL_GPIO_EXTI_Callback
  * @brief   IRQ HAL call-back for all EXTI configured lines
  *          i.e. DW_RESET_Pin and DW_IRQn_Pin
  * */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-    if (GPIO_Pin == DW_RESET_Pin)
-    {
-        signalResetDone = 1;
-    }
-    else if (GPIO_Pin == DW_IRQn_Pin)
+    if (GPIO_Pin == DW_IRQn_Pin)
     {
         process_deca_irq();
-    }
-    else
-    {
     }
 }
 
@@ -268,127 +241,16 @@ __INLINE uint32_t port_CheckEXT_IRQ(void)
  *                              USB report section
  *
  *******************************************************************************/
-#include "usb_device.h"
 
-#define REPORT_BUFSIZE  0x2000
-
-extern USBD_HandleTypeDef  hUsbDeviceFS;
-
-static struct
-{
-    HAL_LockTypeDef       Lock;     /*!< locking object                  */
-}
-txhandle={.Lock = HAL_UNLOCKED};
-
-static char     rbuf[REPORT_BUFSIZE];               /**< circular report buffer, data to be transmitted in flush_report_buff() Thread */
-static struct   circ_buf report_buf = { .buf = rbuf,
-                                        .head= 0,
-                                        .tail= 0};
-
-static uint8_t  ubuf[CDC_DATA_FS_MAX_PACKET_SIZE];  /**< used to transmit new chunk of data in single USB flush */
-
-/* @fn      port_tx_msg()
- * @brief   put message to circular report buffer
- *          it will be transmitted in background ASAP from flushing Thread
- * @return  HAL_BUSY - can not do it now, wait for release
- *          HAL_ERROR- buffer overflow
- *          HAL_OK   - scheduled for transmission
- * */
-HAL_StatusTypeDef port_tx_msg(uint8_t   *str, int  len)
-{
-    int head, tail, size;
-    HAL_StatusTypeDef   ret;
-
-    /* add TX msg to circular buffer and increase circular buffer length */
-
-    __HAL_LOCK(&txhandle);  //return HAL_BUSY if locked
-    head = report_buf.head;
-    tail = report_buf.tail;
-    __HAL_UNLOCK(&txhandle);
-
-    size = REPORT_BUFSIZE;
-
-    if(CIRC_SPACE(head, tail, size) > (len))
-    {
-        while (len > 0)
-        {
-            report_buf.buf[head]= *(str++);
-            head= (head+1) & (size - 1);
-            len--;
-        }
-
-        __HAL_LOCK(&txhandle);  //return HAL_BUSY if locked
-        report_buf.head = head;
-        __HAL_UNLOCK(&txhandle);
-
-#ifdef CMSIS_RTOS
-        osSignalSet(usbTxTaskHandle, signalUsbFlush);   //RTOS multitasking signal start flushing
-#endif
-        ret = HAL_OK;
-    }
-    else
-    {
-        /* if packet can not fit, setup TX Buffer overflow ERROR and exit */
-        ret = HAL_ERROR;
-    }
-
-    return ret;
-}
-
-
-/* @fn      flush_report_buff
- * @brief   FLUSH should have higher priority than port_tx_msg()
- *          it shall be called periodically from process, which can not be locked,
- *          i.e. from independent high priority thread
- * */
-HAL_StatusTypeDef flush_report_buff(void)
-{
-    USBD_CDC_HandleTypeDef   *hcdc = (USBD_CDC_HandleTypeDef*)(hUsbDeviceFS.pClassData);
-
-    int i, head, tail, len, size = REPORT_BUFSIZE;
-
-    __HAL_LOCK(&txhandle);  //"return HAL_BUSY;" if locked
-    head = report_buf.head;
-    tail = report_buf.tail;
-    __HAL_UNLOCK(&txhandle);
-
-    len = CIRC_CNT(head, tail, size);
-
-    if( len > 0 )
-    {
-        /*  check USB status - ready to TX */
-        if((hUsbDeviceFS.dev_state != USBD_STATE_CONFIGURED) || (hcdc->TxState != 0))
-        {
-            return HAL_BUSY;    /**< USB is busy. Let it send now, will return next time */
-        }
-
-
-        /* copy MAX allowed length from circular buffer to non-circular TX buffer */
-        len = MIN(CDC_DATA_FS_MAX_PACKET_SIZE, len);
-
-        for(i=0; i<len; i++)
-        {
-            ubuf[i] = report_buf.buf[tail];
-            tail = (tail + 1) & (size - 1);
-        }
-
-        __HAL_LOCK(&txhandle);  //"return HAL_BUSY;" if locked
-        report_buf.tail = tail;
-        __HAL_UNLOCK(&txhandle);
-
-        /* setup USB IT transfer */
-        if(CDC_Transmit_FS(ubuf, (uint16_t)len) != USBD_OK)
-        {
-            /**< indicate USB transmit error */
-        }
-    }
-
-    return HAL_OK;
-}
+/****************************************************************************//**
+ *
+ *                              END OF USB report section
+ *
+ *******************************************************************************/
 
 
 /* DW1000 IRQ handler definition. */
-port_deca_isr_t port_deca_isr = NULL;
+// port_deca_isr_t port_deca_isr = NULL;
 
 /*! ------------------------------------------------------------------------------------------------------------------
  * @fn port_set_deca_isr()

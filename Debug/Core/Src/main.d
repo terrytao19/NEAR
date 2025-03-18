@@ -29,7 +29,14 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_spi.h \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_spi_ex.h \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart.h \
- ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart_ex.h
+ ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart_ex.h \
+ C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/decadriver/inc/deca_device_api.h \
+ C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/decadriver/inc/deca_regs.h \
+ C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/decadriver/inc/deca_version.h \
+ C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/platform/inc/deca_spi.h \
+ C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/decadriver/inc/deca_types.h \
+ C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/platform/inc/port.h \
+ C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/compiler/inc/compiler.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal.h:
 ../Core/Inc/stm32f0xx_hal_conf.h:
@@ -62,3 +69,10 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_spi_ex.h:
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart.h:
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart_ex.h:
+C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/decadriver/inc/deca_device_api.h:
+C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/decadriver/inc/deca_regs.h:
+C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/decadriver/inc/deca_version.h:
+C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/platform/inc/deca_spi.h:
+C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/decadriver/inc/deca_types.h:
+C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/platform/inc/port.h:
+C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/compiler/inc/compiler.h:
