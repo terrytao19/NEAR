@@ -32,6 +32,14 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+#include "port.h"
+
+// #define EX_01A_DEF // TRANSMITTER SIMPLE
+// #define EX_02A_DEF 1 // RECEIVER SIMPLE
+// #define EX_02E_DEF 1 // RECEIVER DOUBLE BUFFER
+#define EX_05A_DEF 1 // TWR INITIALIZER
+// #define EX_05B_DEF 1 // TWR RESPONDER
+
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -59,6 +67,9 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define E5_NRST_Pin GPIO_PIN_0
 #define E5_NRST_GPIO_Port GPIOA
+#define DW_RESET_Pin GPIO_PIN_2
+#define DW_RESET_GPIO_Port GPIOA
+#define DW_RESET_EXTI_IRQn EXTI2_3_IRQn
 #define DW_NSS_Pin GPIO_PIN_4
 #define DW_NSS_GPIO_Port GPIOA
 #define DW_SCK_Pin GPIO_PIN_5

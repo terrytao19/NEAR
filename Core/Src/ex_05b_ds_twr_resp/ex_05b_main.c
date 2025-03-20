@@ -17,15 +17,10 @@
  *
  * @author Decawave
  */
-#ifdef EX_05B_DEF
-#include <stdio.h>
-#include <string.h>
 
-#include "deca_device_api.h"
-#include "deca_regs.h"
-#include "lcd.h"
-#include "deca_spi.h"
-#include "port.h"
+#include "ex_05b_main.h"
+
+#ifdef EX_05B_DEF
 
 /* Example application name and version to display on LCD screen. */
 #define APP_NAME "DS TWR RESP v1.2"
@@ -109,6 +104,8 @@ static uint64 get_tx_timestamp_u64(void);
 static uint64 get_rx_timestamp_u64(void);
 static void final_msg_get_ts(const uint8 *ts_field, uint32 *ts);
 
+USBD_HandleTypeDef hUSBDDevice;
+
 /*! ------------------------------------------------------------------------------------------------------------------
  * @fn main()
  *
@@ -120,7 +117,7 @@ static void final_msg_get_ts(const uint8 *ts_field, uint32 *ts);
  */
 int dw_main(void)
 {
-    // /* Display application name on LCD. */
+    /* Display application name on LCD. */
     // lcd_display_str(APP_NAME);
 
     /* Reset and initialise DW1000.
@@ -138,6 +135,8 @@ int dw_main(void)
 
     /* Configure DW1000. See NOTE 7 below. */
     dwt_configure(&config);
+
+    dwt_setdblrxbuffmode(0);
 
     /* Apply default antenna delay value. See NOTE 1 below. */
     dwt_setrxantennadelay(RX_ANT_DLY);
@@ -257,7 +256,10 @@ int dw_main(void)
 
                         /* Display computed distance on LCD. */
                         sprintf(dist_str, "DIST: %3.2f m", distance);
-                        lcd_display_str(dist_str);
+                        // lcd_display_str(dist_str);
+
+                        CDC_Transmit_FS((uint8_t*) dist_str, sizeof(dist_str));
+
                     }
                 }
                 else

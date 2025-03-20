@@ -4,6 +4,11 @@
         "stm32f0xx_hal_conf.h": "c",
         "deca_device_api.h": "c",
         "main.h": "c",
-        "port.h": "c"
+        "port.h": "c",
+        "deca_regs.h": "c",
+        "usb_device.h": "c",
+        "ex_02a_main.h": "c",
+        "stm32f0xx.h": "c",
+        "ex_01a_main.h": "c"
     }
 }

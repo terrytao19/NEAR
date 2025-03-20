@@ -11,10 +11,17 @@ RM := rm -rf
 -include sources.mk
 -include platform/src/subdir.mk
 -include decadriver/src/subdir.mk
+-include USB_DEVICE/Target/subdir.mk
+-include USB_DEVICE/App/subdir.mk
+-include Middlewares/ST/STM32_USB_Device_Library/Core/Src/subdir.mk
+-include Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/subdir.mk
 -include Drivers/STM32F0xx_HAL_Driver/Src/subdir.mk
 -include Core/Startup/subdir.mk
 -include Core/Src/ex_05b_ds_twr_resp/subdir.mk
 -include Core/Src/ex_05a_ds_twr_init/subdir.mk
+-include Core/Src/ex_02e_rx_dbl_buff/subdir.mk
+-include Core/Src/ex_02a_simple_rx/subdir.mk
+-include Core/Src/ex_01a_simple_tx/subdir.mk
 -include Core/Src/subdir.mk
 -include objects.mk
 

@@ -17,14 +17,10 @@
  *
  * @author Decawave
  */
-#ifdef EX_05A_DEF
-#include <string.h>
 
-#include "deca_device_api.h"
-#include "deca_regs.h"
-#include "lcd.h"
-#include "deca_spi.h"
-#include "port.h"
+#include "ex_05a_main.h"
+
+#ifdef EX_05A_DEF
 
 /* Example application name and version to display on LCD screen. */
 #define APP_NAME "DS TWR INIT v1.2"
@@ -74,7 +70,7 @@ static uint8 rx_buffer[RX_BUF_LEN];
 static uint32 status_reg = 0;
 
 /* UWB microsecond (uus) to device time unit (dtu, around 15.65 ps) conversion factor.
- * 1 uus = 512 / 499.2 µs and 1 µs = 499.2 * 128 dtu. */
+ * 1 uus = 512 / 499.2 ï¿½s and 1 ï¿½s = 499.2 * 128 dtu. */
 #define UUS_TO_DWT_TIME 65536
 
 /* Delay between frames, in UWB microseconds. See NOTE 4 below. */
@@ -100,6 +96,8 @@ static uint64 get_tx_timestamp_u64(void);
 static uint64 get_rx_timestamp_u64(void);
 static void final_msg_set_ts(uint8 *ts_field, uint64 ts);
 
+USBD_HandleTypeDef hUSBDDevice;
+
 /*! ------------------------------------------------------------------------------------------------------------------
  * @fn main()
  *
@@ -112,7 +110,7 @@ static void final_msg_set_ts(uint8 *ts_field, uint64 ts);
 int dw_main(void)
 {
     /* Display application name on LCD. */
-    lcd_display_str(APP_NAME);
+    // lcd_display_str(APP_NAME);
 
     /* Reset and initialise DW1000.
      * For initialisation, DW1000 clocks must be temporarily set to crystal speed. After initialisation SPI rate can be increased for optimum
@@ -121,7 +119,7 @@ int dw_main(void)
     port_set_dw1000_slowrate();
     if (dwt_initialise(DWT_LOADUCODE) == DWT_ERROR)
     {
-        lcd_display_str("INIT FAILED");
+        // lcd_display_str("INIT FAILED");
         while (1)
         { };
     }
@@ -129,6 +127,8 @@ int dw_main(void)
 
     /* Configure DW1000. See NOTE 7 below. */
     dwt_configure(&config);
+
+    dwt_setdblrxbuffmode(0);
 
     /* Apply default antenna delay value. See NOTE 1 below. */
     dwt_setrxantennadelay(RX_ANT_DLY);
@@ -155,6 +155,9 @@ int dw_main(void)
         /* We assume that the transmission is achieved correctly, poll for reception of a frame or error/timeout. See NOTE 9 below. */
         while (!((status_reg = dwt_read32bitreg(SYS_STATUS_ID)) & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR)))
         { };
+
+        uint32_t status_reg_error = status_reg & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR);
+        CDC_Transmit_FS((uint8_t*) status_reg_error, sizeof(status_reg_error));
 
         /* Increment frame sequence number after transmission of the poll message (modulo 256). */
         frame_seq_nb++;

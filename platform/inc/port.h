@@ -82,6 +82,8 @@ typedef int64_t         int64 ;
 #define DECAIRQ                     DW_IRQn_Pin
 #define DECAIRQ_GPIO                DW_IRQn_GPIO_Port
 
+#define EXTI2_IRQn                  EXTI2_3_IRQn
+
 /****************************************************************************//**
  *
  *                              MACRO function
@@ -108,10 +110,17 @@ unsigned long portGetTickCnt(void);
 
 void port_wakeup_dw1000(void);
 
+void port_wakeup_dw1000_fast(void);
+
 void port_set_dw1000_slowrate(void);
 void port_set_dw1000_fastrate(void);
 
 void process_deca_irq(void);
+
+void setup_DW1000RSTnIRQ(int enable);
+
+void reset_DW1000(void);
+
 
 ITStatus EXTI_GetITEnStatus(uint32_t x);
 

@@ -115,6 +115,71 @@ ITStatus EXTI_GetITEnStatus(uint32_t x)
  *
  *******************************************************************************/
 
+/* @fn      reset_DW1000
+ * @brief   DW_RESET pin on DW1000 has 2 functions
+ *          In general it is output, but it also can be used to reset the digital
+ *          part of DW1000 by driving this pin low.
+ *          Note, the DW_RESET pin should not be driven high externally.
+ * */
+void reset_DW1000(void)
+{
+    GPIO_InitTypeDef    GPIO_InitStruct;
+
+    // Enable GPIO used for DW1000 reset as open collector output
+    GPIO_InitStruct.Pin = DW_RESET_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(DW_RESET_GPIO_Port, &GPIO_InitStruct);
+
+    //drive the RSTn pin low
+    HAL_GPIO_WritePin(DW_RESET_GPIO_Port, DW_RESET_Pin, GPIO_PIN_RESET);
+
+    usleep(1);
+
+    //put the pin back to output open-drain (not active)
+    setup_DW1000RSTnIRQ(0);
+
+
+
+    Sleep(2);
+}
+
+/* @fn      setup_DW1000RSTnIRQ
+ * @brief   setup the DW_RESET pin mode
+ *          0 - output Open collector mode
+ *          !0 - input mode with connected EXTI2 IRQ
+ * */
+void setup_DW1000RSTnIRQ(int enable)
+{
+    GPIO_InitTypeDef GPIO_InitStruct;
+
+    if(enable)
+    {
+        // Enable GPIO used as DECA RESET for interrupt
+        GPIO_InitStruct.Pin = DW_RESET_Pin;
+        GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+        GPIO_InitStruct.Pull = GPIO_NOPULL;
+        HAL_GPIO_Init(DW_RESET_GPIO_Port, &GPIO_InitStruct);
+
+        HAL_NVIC_EnableIRQ(EXTI2_IRQn);     //pin #0 -> EXTI #0
+        HAL_NVIC_SetPriority(EXTI2_IRQn, 5, 0);
+    }
+    else
+    {
+        HAL_NVIC_DisableIRQ(EXTI2_IRQn);    //pin #0 -> EXTI #0
+
+        //put the pin back to tri-state ... as
+        //output open-drain (not active)
+        GPIO_InitStruct.Pin = DW_RESET_Pin;
+        GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+        GPIO_InitStruct.Pull = GPIO_NOPULL;
+        GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+        HAL_GPIO_Init(DW_RESET_GPIO_Port, &GPIO_InitStruct);
+        HAL_GPIO_WritePin(DW_RESET_GPIO_Port, DW_RESET_Pin, GPIO_PIN_SET);
+    }
+}
+
+
 /* @fn      port_wakeup_dw1000
  * @brief   "slow" waking up of DW1000 using DW_CS only
  * */
@@ -124,6 +189,37 @@ void port_wakeup_dw1000(void)
     Sleep(1);
     HAL_GPIO_WritePin(DW_NSS_GPIO_Port, DW_NSS_Pin, GPIO_PIN_SET);
     Sleep(7);                       //wait 7ms for DW1000 XTAL to stabilise
+}
+
+/* @fn      port_wakeup_dw1000_fast
+ * @brief   waking up of DW1000 using DW_CS and DW_RESET pins.
+ *          The DW_RESET signalling that the DW1000 is in the INIT state.
+ *          the total fast wakeup takes ~2.2ms and depends on crystal startup time
+ * */
+void port_wakeup_dw1000_fast(void)
+{
+    #define WAKEUP_TMR_MS   (10)
+
+    uint32_t x = 0;
+    uint32_t timestamp = HAL_GetTick(); //protection
+
+    setup_DW1000RSTnIRQ(0);         //disable RSTn IRQ
+    signalResetDone = 0;            //signalResetDone connected to RST_PIN_IRQ
+    setup_DW1000RSTnIRQ(1);         //enable RSTn IRQ
+    port_SPIx_clear_chip_select();  //CS low
+
+    //need to poll to check when the DW1000 is in the IDLE, the CPLL interrupt is not reliable
+    //when RSTn goes high the DW1000 is in INIT, it will enter IDLE after PLL lock (in 5 us)
+    while((signalResetDone == 0) && \
+          ((HAL_GetTick() - timestamp) < WAKEUP_TMR_MS))
+    {
+        x++;     //when DW1000 will switch to an IDLE state RSTn pin will high
+    }
+    setup_DW1000RSTnIRQ(0);         //disable RSTn IRQ
+    port_SPIx_set_chip_select();    //CS high
+
+    //it takes ~35us in total for the DW1000 to lock the PLL, download AON and go to IDLE state
+    usleep(35);
 }
 
 /* @fn      port_set_dw1000_slowrate
