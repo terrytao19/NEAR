@@ -12,7 +12,7 @@
  */
 
 
-#include "ex_02a_main.h"
+#include "ex_main.h"
 
 #ifdef EX_02A_DEF
 

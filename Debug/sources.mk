@@ -1,6 +1,6 @@
 ################################################################################
 # Automatically-generated file. Do not edit!
-# Toolchain: GNU Tools for STM32 (12.3.rel1)
+# Toolchain: GNU Tools for STM32 (13.3.rel1)
 ################################################################################
 
 ELF_SRCS := 
@@ -25,6 +25,8 @@ SUBDIRS := \
 Core/Src/ex_01a_simple_tx \
 Core/Src/ex_02a_simple_rx \
 Core/Src/ex_02e_rx_dbl_buff \
+Core/Src/ex_03a_tx_wait_resp \
+Core/Src/ex_03b_rx_send_resp \
 Core/Src/ex_05a_ds_twr_init \
 Core/Src/ex_05b_ds_twr_resp \
 Core/Src \

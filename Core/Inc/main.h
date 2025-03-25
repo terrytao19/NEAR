@@ -37,8 +37,10 @@ extern "C" {
 // #define EX_01A_DEF // TRANSMITTER SIMPLE
 // #define EX_02A_DEF 1 // RECEIVER SIMPLE
 // #define EX_02E_DEF 1 // RECEIVER DOUBLE BUFFER
-#define EX_05A_DEF 1 // TWR INITIALIZER
-// #define EX_05B_DEF 1 // TWR RESPONDER
+// #define EX_05A_DEF 1 // TWR INITIALIZER
+#define EX_05B_DEF 1 // TWR RESPONDER
+// # define EX_03A_DEF 1 // TX WAIT
+// # define EX_03B_DEF 1 // RX WAIT
 
 /* USER CODE END Includes */
 

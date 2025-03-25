@@ -1,6 +1,6 @@
 ################################################################################
 # Automatically-generated file. Do not edit!
-# Toolchain: GNU Tools for STM32 (12.3.rel1)
+# Toolchain: GNU Tools for STM32 (13.3.rel1)
 ################################################################################
 
 -include ../makefile.init
@@ -19,6 +19,8 @@ RM := rm -rf
 -include Core/Startup/subdir.mk
 -include Core/Src/ex_05b_ds_twr_resp/subdir.mk
 -include Core/Src/ex_05a_ds_twr_init/subdir.mk
+-include Core/Src/ex_03b_rx_send_resp/subdir.mk
+-include Core/Src/ex_03a_tx_wait_resp/subdir.mk
 -include Core/Src/ex_02e_rx_dbl_buff/subdir.mk
 -include Core/Src/ex_02a_simple_rx/subdir.mk
 -include Core/Src/ex_01a_simple_tx/subdir.mk
@@ -71,8 +73,8 @@ all: main-build
 main-build: NEAR_ANCHOR.elf secondary-outputs
 
 # Tool invocations
-NEAR_ANCHOR.elf NEAR_ANCHOR.map: $(OBJS) $(USER_OBJS) C:\Users\terry\STM32CubeIDE\workspace_1.16.0\NEAR_ANCHOR\STM32F072CBTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "NEAR_ANCHOR.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0 -T"C:\Users\terry\STM32CubeIDE\workspace_1.16.0\NEAR_ANCHOR\STM32F072CBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="NEAR_ANCHOR.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+NEAR_ANCHOR.elf NEAR_ANCHOR.map: $(OBJS) $(USER_OBJS) C:\Users\twhel\Documents\Rob450\nearfield\NEAR\STM32F072CBTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "NEAR_ANCHOR.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0 -T"C:\Users\twhel\Documents\Rob450\nearfield\NEAR\STM32F072CBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="NEAR_ANCHOR.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

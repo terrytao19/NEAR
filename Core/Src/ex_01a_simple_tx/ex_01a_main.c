@@ -11,7 +11,7 @@
  * @author Decawave
  */
 
-#include "ex_01a_main.h"
+#include "ex_main.h"
 
 #ifdef EX_01A_DEF
 

@@ -26,8 +26,9 @@
 // #include "ex_01a_main.h" // TRANSMITTER SIMPLE
 // #include "ex_02a_main.h" // RECEIVER SIMPLE DO NOT USE SIMPLE RECEIVE
 // #include "ex_02e_main.h" // RECEIVER DOUBLE BUFFER
-#include "ex_05a_main.h" // TWR INITIALIZER
+// #include "ex_05a_main.h" // TWR INITIALIZER
 // #include "ex_05b_main.h" // TWR RESPONDER
+#include "ex_main.h"
 
 /* USER CODE END Includes */
 

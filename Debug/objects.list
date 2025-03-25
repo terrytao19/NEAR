@@ -1,6 +1,8 @@
 "./Core/Src/ex_01a_simple_tx/ex_01a_main.o"
 "./Core/Src/ex_02a_simple_rx/ex_02a_main.o"
 "./Core/Src/ex_02e_rx_dbl_buff/ex_02e_main.o"
+"./Core/Src/ex_03a_tx_wait_resp/ex_03a_main.o"
+"./Core/Src/ex_03b_rx_send_resp/ex_03b_main.o"
 "./Core/Src/ex_05a_ds_twr_init/ex_05a_main.o"
 "./Core/Src/ex_05b_ds_twr_resp/ex_05b_main.o"
 "./Core/Src/main.o"

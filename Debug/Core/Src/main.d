@@ -33,16 +33,16 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_spi_ex.h \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart.h \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart_ex.h \
- C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/platform/inc/port.h \
- C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/compiler/inc/compiler.h \
+ C:/Users/twhel/Documents/Rob450/nearfield/NEAR/platform/inc/port.h \
+ C:/Users/twhel/Documents/Rob450/nearfield/NEAR/compiler/inc/compiler.h \
  ../USB_DEVICE/App/usb_device.h \
  ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h \
- ../USB_DEVICE/Target/usbd_conf.h ../Core/Inc/ex_05a_main.h \
- C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/decadriver/inc/deca_device_api.h \
- C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/decadriver/inc/deca_regs.h \
- C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/decadriver/inc/deca_version.h \
- C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/platform/inc/deca_spi.h \
- C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/decadriver/inc/deca_types.h \
+ ../USB_DEVICE/Target/usbd_conf.h ../Core/Inc/ex_main.h \
+ C:/Users/twhel/Documents/Rob450/nearfield/NEAR/decadriver/inc/deca_device_api.h \
+ C:/Users/twhel/Documents/Rob450/nearfield/NEAR/decadriver/inc/deca_regs.h \
+ C:/Users/twhel/Documents/Rob450/nearfield/NEAR/decadriver/inc/deca_version.h \
+ C:/Users/twhel/Documents/Rob450/nearfield/NEAR/platform/inc/deca_spi.h \
+ C:/Users/twhel/Documents/Rob450/nearfield/NEAR/decadriver/inc/deca_types.h \
  ../USB_DEVICE/App/usbd_cdc_if.h \
  ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc/usbd_cdc.h \
  ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h \
@@ -85,17 +85,17 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_spi_ex.h:
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart.h:
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart_ex.h:
-C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/platform/inc/port.h:
-C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/compiler/inc/compiler.h:
+C:/Users/twhel/Documents/Rob450/nearfield/NEAR/platform/inc/port.h:
+C:/Users/twhel/Documents/Rob450/nearfield/NEAR/compiler/inc/compiler.h:
 ../USB_DEVICE/App/usb_device.h:
 ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h:
 ../USB_DEVICE/Target/usbd_conf.h:
-../Core/Inc/ex_05a_main.h:
-C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/decadriver/inc/deca_device_api.h:
-C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/decadriver/inc/deca_regs.h:
-C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/decadriver/inc/deca_version.h:
-C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/platform/inc/deca_spi.h:
-C:/Users/terry/STM32CubeIDE/workspace_1.16.0/NEAR_ANCHOR/decadriver/inc/deca_types.h:
+../Core/Inc/ex_main.h:
+C:/Users/twhel/Documents/Rob450/nearfield/NEAR/decadriver/inc/deca_device_api.h:
+C:/Users/twhel/Documents/Rob450/nearfield/NEAR/decadriver/inc/deca_regs.h:
+C:/Users/twhel/Documents/Rob450/nearfield/NEAR/decadriver/inc/deca_version.h:
+C:/Users/twhel/Documents/Rob450/nearfield/NEAR/platform/inc/deca_spi.h:
+C:/Users/twhel/Documents/Rob450/nearfield/NEAR/decadriver/inc/deca_types.h:
 ../USB_DEVICE/App/usbd_cdc_if.h:
 ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc/usbd_cdc.h:
 ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h:

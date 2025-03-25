@@ -18,7 +18,7 @@
  * @author Decawave
  */
 
-#include "ex_05b_main.h"
+#include "ex_main.h"
 
 #ifdef EX_05B_DEF
 
@@ -158,6 +158,9 @@ int dw_main(void)
         while (!((status_reg = dwt_read32bitreg(SYS_STATUS_ID)) & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR)))
         { };
 
+	uint32 error = status_reg & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR);
+	CDC_Transmit_FS((uint8 *) &status_reg, sizeof(status_reg));
+
         if (status_reg & SYS_STATUS_RXFCG)
         {
             uint32 frame_len;
@@ -255,7 +258,7 @@ int dw_main(void)
                         distance = tof * SPEED_OF_LIGHT;
 
                         /* Display computed distance on LCD. */
-                        sprintf(dist_str, "DIST: %3.2f m", distance);
+                        // sprintf(dist_str, "DIST: %3.2f m", distance);
                         // lcd_display_str(dist_str);
 
                         CDC_Transmit_FS((uint8_t*) dist_str, sizeof(dist_str));
