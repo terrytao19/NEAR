@@ -34,7 +34,7 @@ static dwt_config_t config = {
 };
 
 /* Buffer to store received frame. See NOTE 1 below. */
-#define FRAME_LEN_MAX 127
+#define FRAME_LEN_MAX 24
 static uint8 rx_buffer[FRAME_LEN_MAX];
 
 /* Hold copy of status register state here for reference so that it can be examined at a debug breakpoint. */

@@ -128,17 +128,17 @@ int dw_main(void)
     /* Configure DW1000. See NOTE 7 below. */
     dwt_configure(&config);
 
-    dwt_setdblrxbuffmode(0);
+    // dwt_setdblrxbuffmode(0);
 
     /* Apply default antenna delay value. See NOTE 1 below. */
-    dwt_setrxantennadelay(RX_ANT_DLY);
-    dwt_settxantennadelay(TX_ANT_DLY);
+    // dwt_setrxantennadelay(RX_ANT_DLY);
+    // dwt_settxantennadelay(TX_ANT_DLY);
 
     /* Set expected response's delay and timeout. See NOTE 4, 5 and 6 below.
      * As this example only handles one incoming frame with always the same delay and timeout, those values can be set here once for all. */
     dwt_setrxaftertxdelay(POLL_TX_TO_RESP_RX_DLY_UUS);
     dwt_setrxtimeout(RESP_RX_TIMEOUT_UUS);
-    dwt_setpreambledetecttimeout(PRE_TIMEOUT);
+    // dwt_setpreambledetecttimeout(PRE_TIMEOUT);
 
     /* Loop forever initiating ranging exchanges. */
     while (1)
@@ -156,8 +156,8 @@ int dw_main(void)
         while (!((status_reg = dwt_read32bitreg(SYS_STATUS_ID)) & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR)))
         { };
 
-        uint32_t status_reg_error = status_reg & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR);
-        CDC_Transmit_FS((uint8_t*) status_reg_error, sizeof(status_reg_error));
+        // uint32_t status_reg_error = status_reg & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR);
+        // CDC_Transmit_FS((uint8_t*) status_reg_error, sizeof(status_reg_error));
 
         /* Increment frame sequence number after transmission of the poll message (modulo 256). */
         frame_seq_nb++;
@@ -166,15 +166,17 @@ int dw_main(void)
         {
             uint32 frame_len;
 
-            /* Clear good RX frame event and TX frame sent in the DW1000 status register. */
-            dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_RXFCG | SYS_STATUS_TXFRS);
-
             /* A frame has been received, read it into the local buffer. */
             frame_len = dwt_read32bitreg(RX_FINFO_ID) & RX_FINFO_RXFLEN_MASK;
             if (frame_len <= RX_BUF_LEN)
             {
                 dwt_readrxdata(rx_buffer, frame_len, 0);
             }
+
+            CDC_Transmit_FS(rx_buffer, sizeof(rx_buffer));
+
+            /* Clear good RX frame event and TX frame sent in the DW1000 status register. */
+            dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_RXFCG | SYS_STATUS_TXFRS);
 
             /* Check that the frame is the expected response from the companion "DS TWR responder" example.
              * As the sequence number field of the frame is not relevant, it is cleared to simplify the validation of the frame. */

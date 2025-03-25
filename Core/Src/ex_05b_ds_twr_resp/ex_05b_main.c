@@ -136,14 +136,14 @@ int dw_main(void)
     /* Configure DW1000. See NOTE 7 below. */
     dwt_configure(&config);
 
-    dwt_setdblrxbuffmode(0);
+    // dwt_setdblrxbuffmode(1);
 
     /* Apply default antenna delay value. See NOTE 1 below. */
     dwt_setrxantennadelay(RX_ANT_DLY);
     dwt_settxantennadelay(TX_ANT_DLY);
 
     /* Set preamble timeout for expected frames. See NOTE 6 below. */
-    dwt_setpreambledetecttimeout(PRE_TIMEOUT);
+    // dwt_setpreambledetecttimeout(PRE_TIMEOUT);
 
     /* Loop forever responding to ranging requests. */
     while (1)
@@ -151,22 +151,27 @@ int dw_main(void)
         /* Clear reception timeout to start next ranging process. */
         dwt_setrxtimeout(0);
 
+        int i;
+
+        for (i = 0 ; i < RX_BUF_LEN; i++ )
+        {
+            rx_buffer[i] = 0;
+        }
+
         /* Activate reception immediately. */
         dwt_rxenable(DWT_START_RX_IMMEDIATE);
 
         /* Poll for reception of a frame or error/timeout. See NOTE 8 below. */
         while (!((status_reg = dwt_read32bitreg(SYS_STATUS_ID)) & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR)))
+        // while (!((status_reg = dwt_read32bitreg(SYS_STATUS_ID)) & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_ERR)))
         { };
 
-	uint32 error = status_reg & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR);
-	CDC_Transmit_FS((uint8 *) &status_reg, sizeof(status_reg));
+        // uint32 error = status_reg & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR);
+        // CDC_Transmit_FS((uint8 *) &status_reg, sizeof(status_reg));
 
         if (status_reg & SYS_STATUS_RXFCG)
         {
             uint32 frame_len;
-
-            /* Clear good RX frame event in the DW1000 status register. */
-            dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_RXFCG);
 
             /* A frame has been received, read it into the local buffer. */
             frame_len = dwt_read32bitreg(RX_FINFO_ID) & RX_FINFO_RXFL_MASK_1023;
@@ -175,30 +180,38 @@ int dw_main(void)
                 dwt_readrxdata(rx_buffer, frame_len, 0);
             }
 
+            /* Clear good RX frame event in the DW1000 status register. */
+            dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_RXFCG);
+            
             /* Check that the frame is a poll sent by "DS TWR initiator" example.
              * As the sequence number field of the frame is not relevant, it is cleared to simplify the validation of the frame. */
             rx_buffer[ALL_MSG_SN_IDX] = 0;
             if (memcmp(rx_buffer, rx_poll_msg, ALL_MSG_COMMON_LEN) == 0)
             {
+
                 uint32 resp_tx_time;
                 int ret;
 
                 /* Retrieve poll reception timestamp. */
-                poll_rx_ts = get_rx_timestamp_u64();
+                // poll_rx_ts = get_rx_timestamp_u64();
 
                 /* Set send time for response. See NOTE 9 below. */
-                resp_tx_time = (poll_rx_ts + (POLL_RX_TO_RESP_TX_DLY_UUS * UUS_TO_DWT_TIME)) >> 8;
-                dwt_setdelayedtrxtime(resp_tx_time);
+                // resp_tx_time = (poll_rx_ts + (POLL_RX_TO_RESP_TX_DLY_UUS * UUS_TO_DWT_TIME)) >> 8;
+                // dwt_setdelayedtrxtime(resp_tx_time);
+
+                // CDC_Transmit_FS((uint8*)&resp_tx_time, sizeof(resp_tx_time));
 
                 /* Set expected delay and timeout for final message reception. See NOTE 4 and 5 below. */
-                dwt_setrxaftertxdelay(RESP_TX_TO_FINAL_RX_DLY_UUS);
-                dwt_setrxtimeout(FINAL_RX_TIMEOUT_UUS);
+                // dwt_setrxaftertxdelay(RESP_TX_TO_FINAL_RX_DLY_UUS);
+                // dwt_setrxtimeout(FINAL_RX_TIMEOUT_UUS);
 
                 /* Write and send the response message. See NOTE 10 below.*/
                 tx_resp_msg[ALL_MSG_SN_IDX] = frame_seq_nb;
                 dwt_writetxdata(sizeof(tx_resp_msg), tx_resp_msg, 0); /* Zero offset in TX buffer. */
                 dwt_writetxfctrl(sizeof(tx_resp_msg), 0, 1); /* Zero offset in TX buffer, ranging. */
-                ret = dwt_starttx(DWT_START_TX_DELAYED | DWT_RESPONSE_EXPECTED);
+                ret = dwt_starttx(DWT_START_TX_IMMEDIATE | DWT_RESPONSE_EXPECTED);
+
+                CDC_Transmit_FS(tx_resp_msg, sizeof(tx_resp_msg));
 
                 /* If dwt_starttx() returns an error, abandon this ranging exchange and proceed to the next one. See NOTE 11 below. */
                 if (ret == DWT_ERROR)
@@ -261,7 +274,7 @@ int dw_main(void)
                         // sprintf(dist_str, "DIST: %3.2f m", distance);
                         // lcd_display_str(dist_str);
 
-                        CDC_Transmit_FS((uint8_t*) dist_str, sizeof(dist_str));
+                        // CDC_Transmit_FS((uint8_t*) dist_str, sizeof(dist_str));
 
                     }
                 }

@@ -34,7 +34,7 @@ extern "C" {
 
 #include "port.h"
 
-// #define EX_01A_DEF // TRANSMITTER SIMPLE
+//  #define EX_01A_DEF // TRANSMITTER SIMPLE
 // #define EX_02A_DEF 1 // RECEIVER SIMPLE
 // #define EX_02E_DEF 1 // RECEIVER DOUBLE BUFFER
 // #define EX_05A_DEF 1 // TWR INITIALIZER
