@@ -1,0 +1,20 @@
+Debug/NEAR_ANCHOR.list:        case USB_REQ_GET_DESCRIPTOR:
+decadriver/inc/deca_device_api.h:#define DWT_INT_RXPTO           0x00200000          // preamble detect timeout
+decadriver/inc/deca_device_api.h:    uint16 PTO ;                    //Preamble timeouts
+decadriver/inc/deca_device_api.h: * @brief This call enables preamble timeout (SY_STAT_RXPTO event)
+decadriver/inc/deca_device_api.h: *          - RXRFTO/RXPTO (through cbRxTo callback)
+decadriver/inc/deca_device_api.h: * DWT_INT_RXPTO        0x00200000          // preamble detect timeout
+decadriver/inc/deca_regs.h:#define SYS_MASK_MRXPTO         0x00200000UL    /* Mask Preamble detection timeout event    */
+decadriver/inc/deca_regs.h:#define SYS_STATUS_RXPTO        0x00200000UL    /* Preamble detection timeout */
+decadriver/inc/deca_regs.h:#define SYS_STATUS_ALL_RX_TO   (SYS_STATUS_RXRFTO | SYS_STATUS_RXPTO)
+decadriver/inc/deca_regs.h:#define EVC_PTO_OFFSET          0x12        /* The EVC_PTO field is a 12-bit counter of Preamble detection Timeout events */
+decadriver/inc/deca_regs.h:#define EVC_PTO_LEN             (2)
+decadriver/inc/deca_regs.h:#define EVC_PTO_MASK            0x0FFF
+decadriver/src/deca_device.c: *          - RXRFTO/RXPTO (through cbRxTo callback)
+decadriver/src/deca_device.c: * @brief This call enables preamble timeout (SY_STAT_RXPTO event)
+decadriver/src/deca_device.c: * DWT_INT_RXPTO        0x00200000          // preamble detect timeout
+decadriver/src/deca_device.c:    temp = dwt_read32bitoffsetreg(DIG_DIAG_ID, EVC_STO_OFFSET); // Read PTO (31-16), SFDTO (15-0)
+decadriver/src/deca_device.c:    counters->PTO = (temp >> 16) & 0xFFF;
+Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h:#define  USB_REQ_GET_DESCRIPTOR                         0x06U
+Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h:#define  USB_REQ_SET_DESCRIPTOR                         0x07U
+Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c:        case USB_REQ_GET_DESCRIPTOR:

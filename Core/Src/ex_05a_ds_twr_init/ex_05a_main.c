@@ -32,14 +32,14 @@
 static dwt_config_t config = {
     2,               /* Channel number. */
     DWT_PRF_64M,     /* Pulse repetition frequency. */
-    DWT_PLEN_1024,   /* Preamble length. Used in TX only. */
+    DWT_PLEN_2048,   /* Preamble length. Used in TX only. */
     DWT_PAC32,       /* Preamble acquisition chunk size. Used in RX only. */
     9,               /* TX preamble code. Used in TX only. */
     9,               /* RX preamble code. Used in RX only. */
     1,               /* 0 to use standard SFD, 1 to use non-standard SFD. */
     DWT_BR_110K,     /* Data rate. */
     DWT_PHRMODE_STD, /* PHY header mode. */
-    (1025 + 64 - 32) /* SFD timeout (preamble length + 1 + SFD length - PAC size). Used in RX only. */
+    (2049 + 64 - 32) /* SFD timeout (preamble length + 1 + SFD length - PAC size). Used in RX only. */
 };
 
 /* Default antenna delay values for 64 MHz PRF. See NOTE 1 below. */
@@ -128,7 +128,7 @@ int dw_main(void)
     /* Configure DW1000. See NOTE 7 below. */
     dwt_configure(&config);
 
-    // dwt_setdblrxbuffmode(0);
+     dwt_setdblrxbuffmode(0);
 
     /* Apply default antenna delay value. See NOTE 1 below. */
     // dwt_setrxantennadelay(RX_ANT_DLY);

@@ -29,14 +29,14 @@
 static dwt_config_t config = {
     2,               /* Channel number. */
     DWT_PRF_64M,     /* Pulse repetition frequency. */
-    DWT_PLEN_1024,   /* Preamble length. Used in TX only. */
+    DWT_PLEN_2048,   /* Preamble length. Used in TX only. */
     DWT_PAC32,       /* Preamble acquisition chunk size. Used in RX only. */
     9,               /* TX preamble code. Used in TX only. */
     9,               /* RX preamble code. Used in RX only. */
     1,               /* 0 to use standard SFD, 1 to use non-standard SFD. */
     DWT_BR_110K,     /* Data rate. */
     DWT_PHRMODE_STD, /* PHY header mode. */
-    (1025 + 64 - 32) /* SFD timeout (preamble length + 1 + SFD length - PAC size). Used in RX only. */
+    (2049 + 64 - 32) /* SFD timeout (preamble length + 1 + SFD length - PAC size). Used in RX only. */
 };
 
 /* Default antenna delay values for 64 MHz PRF. See NOTE 1 below. */
@@ -73,11 +73,11 @@ static uint32 status_reg = 0;
 /* Delay between frames, in UWB microseconds. See NOTE 4 below. */
 /* This is the delay from Frame RX timestamp to TX reply timestamp used for calculating/setting the DW1000's delayed TX function. This includes the
  * frame length of approximately 2.46 ms with above configuration. */
-#define POLL_RX_TO_RESP_TX_DLY_UUS 2750
+#define POLL_RX_TO_RESP_TX_DLY_UUS 6000
 /* This is the delay from the end of the frame transmission to the enable of the receiver, as programmed for the DW1000's wait for response feature. */
 #define RESP_TX_TO_FINAL_RX_DLY_UUS 500
 /* Receive final timeout. See NOTE 5 below. */
-#define FINAL_RX_TIMEOUT_UUS 3300
+#define FINAL_RX_TIMEOUT_UUS 8400
 /* Preamble timeout, in multiple of PAC size. See NOTE 6 below. */
 #define PRE_TIMEOUT 8
 
@@ -136,7 +136,7 @@ int dw_main(void)
     /* Configure DW1000. See NOTE 7 below. */
     dwt_configure(&config);
 
-    // dwt_setdblrxbuffmode(1);
+    dwt_setdblrxbuffmode(0);
 
     /* Apply default antenna delay value. See NOTE 1 below. */
     dwt_setrxantennadelay(RX_ANT_DLY);
@@ -151,12 +151,12 @@ int dw_main(void)
         /* Clear reception timeout to start next ranging process. */
         dwt_setrxtimeout(0);
 
-        int i;
-
-        for (i = 0 ; i < RX_BUF_LEN; i++ )
-        {
-            rx_buffer[i] = 0;
-        }
+//         int i;
+//
+//         for (i = 0 ; i < RX_BUF_LEN; i++ )
+//         {
+//             rx_buffer[i] = 0;
+//         }
 
         /* Activate reception immediately. */
         dwt_rxenable(DWT_START_RX_IMMEDIATE);
@@ -166,12 +166,15 @@ int dw_main(void)
         // while (!((status_reg = dwt_read32bitreg(SYS_STATUS_ID)) & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_ERR)))
         { };
 
-        // uint32 error = status_reg & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR);
-        // CDC_Transmit_FS((uint8 *) &status_reg, sizeof(status_reg));
+         uint32 error = status_reg & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR);
+//         CDC_Transmit_FS((uint8 *) &error, sizeof(status_reg));
 
         if (status_reg & SYS_STATUS_RXFCG)
         {
             uint32 frame_len;
+
+            /* Clear good RX frame event in the DW1000 status register. */
+            dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_RXFCG);
 
             /* A frame has been received, read it into the local buffer. */
             frame_len = dwt_read32bitreg(RX_FINFO_ID) & RX_FINFO_RXFL_MASK_1023;
@@ -179,39 +182,37 @@ int dw_main(void)
             {
                 dwt_readrxdata(rx_buffer, frame_len, 0);
             }
-
-            /* Clear good RX frame event in the DW1000 status register. */
-            dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_RXFCG);
             
             /* Check that the frame is a poll sent by "DS TWR initiator" example.
              * As the sequence number field of the frame is not relevant, it is cleared to simplify the validation of the frame. */
             rx_buffer[ALL_MSG_SN_IDX] = 0;
             if (memcmp(rx_buffer, rx_poll_msg, ALL_MSG_COMMON_LEN) == 0)
             {
+//            	CDC_Transmit_FS(rx_buffer, sizeof(rx_poll_msg));
 
                 uint32 resp_tx_time;
                 int ret;
 
                 /* Retrieve poll reception timestamp. */
-                // poll_rx_ts = get_rx_timestamp_u64();
+                 poll_rx_ts = get_rx_timestamp_u64();
+
+//                 CDC_Transmit_FS((uint8*) &poll_rx_ts, sizeof(poll_rx_ts));
 
                 /* Set send time for response. See NOTE 9 below. */
-                // resp_tx_time = (poll_rx_ts + (POLL_RX_TO_RESP_TX_DLY_UUS * UUS_TO_DWT_TIME)) >> 8;
-                // dwt_setdelayedtrxtime(resp_tx_time);
+                 resp_tx_time = (poll_rx_ts + (POLL_RX_TO_RESP_TX_DLY_UUS * UUS_TO_DWT_TIME)) >> 8;
+                 dwt_setdelayedtrxtime(resp_tx_time);
 
                 // CDC_Transmit_FS((uint8*)&resp_tx_time, sizeof(resp_tx_time));
 
                 /* Set expected delay and timeout for final message reception. See NOTE 4 and 5 below. */
-                // dwt_setrxaftertxdelay(RESP_TX_TO_FINAL_RX_DLY_UUS);
-                // dwt_setrxtimeout(FINAL_RX_TIMEOUT_UUS);
+                 dwt_setrxaftertxdelay(RESP_TX_TO_FINAL_RX_DLY_UUS);
+                 dwt_setrxtimeout(FINAL_RX_TIMEOUT_UUS);
 
                 /* Write and send the response message. See NOTE 10 below.*/
                 tx_resp_msg[ALL_MSG_SN_IDX] = frame_seq_nb;
                 dwt_writetxdata(sizeof(tx_resp_msg), tx_resp_msg, 0); /* Zero offset in TX buffer. */
                 dwt_writetxfctrl(sizeof(tx_resp_msg), 0, 1); /* Zero offset in TX buffer, ranging. */
-                ret = dwt_starttx(DWT_START_TX_IMMEDIATE | DWT_RESPONSE_EXPECTED);
-
-                CDC_Transmit_FS(tx_resp_msg, sizeof(tx_resp_msg));
+                ret = dwt_starttx(DWT_START_TX_DELAYED | DWT_RESPONSE_EXPECTED);
 
                 /* If dwt_starttx() returns an error, abandon this ranging exchange and proceed to the next one. See NOTE 11 below. */
                 if (ret == DWT_ERROR)
@@ -222,12 +223,21 @@ int dw_main(void)
                 /* Poll for reception of expected "final" frame or error/timeout. See NOTE 8 below. */
                 while (!((status_reg = dwt_read32bitreg(SYS_STATUS_ID)) & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR)))
                 { };
+                uint32 error = status_reg & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR);
+//                CDC_Transmit_FS((uint8 *) &error, sizeof(status_reg));
 
                 /* Increment frame sequence number after transmission of the response message (modulo 256). */
                 frame_seq_nb++;
 
                 if (status_reg & SYS_STATUS_RXFCG)
                 {
+                    int i;
+
+                    for (i = 0 ; i < RX_BUF_LEN; i++ )
+                    {
+                        rx_buffer[i] = 0;
+                    }
+//                	CDC_Transmit_FS((uint8 *) &status_reg, sizeof(error));
                     /* Clear good RX frame event and TX frame sent in the DW1000 status register. */
                     dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_RXFCG | SYS_STATUS_TXFRS);
 
@@ -238,9 +248,13 @@ int dw_main(void)
                         dwt_readrxdata(rx_buffer, frame_len, 0);
                     }
 
+//                    CDC_Transmit_FS(rx_buffer, sizeof(rx_final_msg));
+
                     /* Check that the frame is a final message sent by "DS TWR initiator" example.
                      * As the sequence number field of the frame is not used in this example, it can be zeroed to ease the validation of the frame. */
                     rx_buffer[ALL_MSG_SN_IDX] = 0;
+//                    CDC_Transmit_FS(rx_buffer, ALL_MSG_COMMON_LEN);
+//                    CDC_Transmit_FS(rx_final_msg, ALL_MSG_COMMON_LEN);
                     if (memcmp(rx_buffer, rx_final_msg, ALL_MSG_COMMON_LEN) == 0)
                     {
                         uint32 poll_tx_ts, resp_rx_ts, final_tx_ts;
@@ -271,10 +285,10 @@ int dw_main(void)
                         distance = tof * SPEED_OF_LIGHT;
 
                         /* Display computed distance on LCD. */
-                        // sprintf(dist_str, "DIST: %3.2f m", distance);
+                        sprintf(dist_str, "DIST: %3.2f m", distance);
                         // lcd_display_str(dist_str);
 
-                        // CDC_Transmit_FS((uint8_t*) dist_str, sizeof(dist_str));
+                         CDC_Transmit_FS((uint8_t*) dist_str, sizeof(dist_str));
 
                     }
                 }
