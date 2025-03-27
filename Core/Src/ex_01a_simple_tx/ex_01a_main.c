@@ -45,8 +45,6 @@ static uint8 tx_msg[] = {0x41, 0x88, 0, 0xCA, 0xDE, 'W', 'A', 'V', 'E', 0x21, 0,
 /* Inter-frame delay period, in milliseconds. */
 #define TX_DELAY_MS 1000
 
-USBD_HandleTypeDef hUSBDDevice;
-
 /**
  * Application entry point.
  */

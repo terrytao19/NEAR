@@ -71,8 +71,6 @@ static uint32 status_reg = 0;
 /* Hold copy of frame length of frame received (if good) so that it can be examined at a debug breakpoint. */
 static uint16 frame_len = 0;
 
-USBD_HandleTypeDef hUSBDDevice;
-
 /**
  * Application entry point.
  */

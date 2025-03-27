@@ -104,8 +104,6 @@ static uint64 get_tx_timestamp_u64(void);
 static uint64 get_rx_timestamp_u64(void);
 static void final_msg_get_ts(const uint8 *ts_field, uint32 *ts);
 
-USBD_HandleTypeDef hUSBDDevice;
-
 /*! ------------------------------------------------------------------------------------------------------------------
  * @fn main()
  *
@@ -166,7 +164,7 @@ int dw_main(void)
         // while (!((status_reg = dwt_read32bitreg(SYS_STATUS_ID)) & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_ERR)))
         { };
 
-         uint32 error = status_reg & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR);
+        //  uint32 error = status_reg & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR);
 //         CDC_Transmit_FS((uint8 *) &error, sizeof(status_reg));
 
         if (status_reg & SYS_STATUS_RXFCG)
@@ -223,7 +221,7 @@ int dw_main(void)
                 /* Poll for reception of expected "final" frame or error/timeout. See NOTE 8 below. */
                 while (!((status_reg = dwt_read32bitreg(SYS_STATUS_ID)) & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR)))
                 { };
-                uint32 error = status_reg & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR);
+                // uint32 error = status_reg & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR);
 //                CDC_Transmit_FS((uint8 *) &error, sizeof(status_reg));
 
                 /* Increment frame sequence number after transmission of the response message (modulo 256). */
@@ -288,7 +286,7 @@ int dw_main(void)
                         sprintf(dist_str, "DIST: %3.2f m", distance);
                         // lcd_display_str(dist_str);
 
-                         CDC_Transmit_FS((uint8_t*) dist_str, sizeof(dist_str));
+                        //  CDC_Transmit_FS((uint8_t*) dist_str, sizeof(dist_str));
 
                     }
                 }

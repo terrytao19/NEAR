@@ -44,8 +44,6 @@ static uint8 rx_buffer[FRAME_LEN_MAX];
 static void rx_ok_cb(const dwt_cb_data_t *cb_data);
 static void rx_err_cb(const dwt_cb_data_t *cb_data);
 
-USBD_HandleTypeDef hUSBDDevice;
-
 /**
  * Application entry point.
  */

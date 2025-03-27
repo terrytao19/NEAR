@@ -83,8 +83,6 @@ UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 
-USBD_HandleTypeDef hUSBDDevice;
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
