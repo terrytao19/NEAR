@@ -1,20 +1,20 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2025 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2025 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -22,6 +22,13 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+
+// #include "ex_01a_main.h" // TRANSMITTER SIMPLE
+// #include "ex_02a_main.h" // RECEIVER SIMPLE DO NOT USE SIMPLE RECEIVE
+// #include "ex_02e_main.h" // RECEIVER DOUBLE BUFFER
+// #include "ex_05a_main.h" // TWR INITIALIZER
+// #include "ex_05b_main.h" // TWR RESPONDER
+#include "ex_main.h"
 
 /* USER CODE END Includes */
 
@@ -32,7 +39,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
 #define UART_RX_BUF_SIZE 1024
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -49,16 +58,19 @@ SPI_HandleTypeDef hspi2;
 TIM_HandleTypeDef htim3;
 
 UART_HandleTypeDef huart1;
-DMA_HandleTypeDef hdma_usart1_rx;
 
 /* USER CODE BEGIN PV */
+
+USBD_HandleTypeDef USBD_Device;
+
+uint8_t uart_rx_buf[UART_RX_BUF_SIZE];
+size_t uart_rx_buf_size;
 
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_DMA_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_ADC_Init(void);
@@ -71,12 +83,7 @@ static void MX_TIM3_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-USBD_HandleTypeDef hUSBDDevice;
-uint8_t uart_rx_buf[UART_RX_BUF_SIZE];
-
-bool joined = 0;
-
-char joined_msg[] = "+JOIN: Network joined";
+extern int dw_main(void);
 
 /* USER CODE END 0 */
 
@@ -109,7 +116,6 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_DMA_Init();
   MX_USART1_UART_Init();
   MX_SPI1_Init();
   MX_ADC_Init();
@@ -117,87 +123,23 @@ int main(void)
   MX_USB_DEVICE_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
+
   HAL_GPIO_WritePin(E5_NRST_GPIO_Port, E5_NRST_Pin, GPIO_PIN_SET);
-  HAL_Delay(2000);
+  HAL_Delay(1000);
   HAL_GPIO_WritePin(E5_NRST_GPIO_Port, E5_NRST_Pin, GPIO_PIN_RESET);
-  HAL_Delay(100);
+   HAL_Delay(100);
   HAL_GPIO_WritePin(E5_NRST_GPIO_Port, E5_NRST_Pin, GPIO_PIN_SET);
   HAL_Delay(100);
 
-  HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uart_rx_buf, UART_RX_BUF_SIZE);
+  // HAL_TIM_Base_Start_IT(&htim3);
 
-  // uint8_t tx_msg_ping[4] = {'A', 'T', '\r', '\n'};
-  // HAL_UART_Transmit_IT(&huart1, tx_msg_ping, 4);
-  // HAL_Delay(100);
-  // char tx_msg[] = "AT+ FDEFAULT= SEEED\r\n"; 
-  // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg, sizeof(tx_msg));
-  // HAL_Delay(100);
-  // char tx_msg_[] = "AT+ID=DevEui\r\n"; 
-  // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_, sizeof(tx_msg_));
-  // HAL_Delay(100);
-  // char tx_msg2[] = "AT+ID=AppEui\r\n";
-  // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg2, sizeof(tx_msg2));
-  // HAL_Delay(100);
-  // char tx_msg_1[] = "AT+ID=DevAddr\r\n"; 
-  // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_1, sizeof(tx_msg_1));
-  // HAL_Delay(100);
-  // char tx_msg[] = "AT+VER?\r\n"; 
-  // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg, sizeof(tx_msg));
-  // HAL_Delay(100);
-  char tx_msg4[] = "AT+DR=US915\r\n"; 
-  HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg4, sizeof(tx_msg4));
-  HAL_Delay(100);
+  HAL_UART_Receive_IT(&huart1, uart_rx_buf, UART_RX_BUF_SIZE);
 
-  char tx_msg5[] = "AT+CH\r\n"; 
-  HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg5, sizeof(tx_msg5));
-  HAL_Delay(100);
+  setup_DW1000RSTnIRQ(0);
 
-  for(int i = 0; i < 72; i++)
-  {
-    if(i < 8 || i > 72)
-    {
-      char tx_msg5_[14];
-      sprintf(tx_msg5_, "AT+CH=%d, OFF", i);
-      HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg5_, sizeof(tx_msg5_));
-    }
-    HAL_Delay(50);
-  }
+  // initLCD();
 
-  char tx_msg0[] = "AT+KEY=APPKEY,\"B8AC2B18AE0F96A0FF83A63E33D0BA15\"\r\n"; 
-  HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg0, sizeof(tx_msg0));
-  HAL_Delay(500);
-  // char tx_msg1[] = "AT+KEY=NWKSKEY,\"B8AC2B18AE0F96A0FF83A63E33D0BA15\"\r\n"; 
-  // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg1, sizeof(tx_msg1));
-  // HAL_Delay(100);  
-  // // char tx_msg2[] = "AT+ID=AppEui,\"0000000000000000\"\r\n";
-  // // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg2, sizeof(tx_msg2));
-  // // HAL_Delay(100);
-
-  char tx_msg3[] = "AT+MODE= LWOTAA\r\n";
-  HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg3, sizeof(tx_msg3));
-  HAL_Delay(100);
-
-
-  // char tx_msg6[] = "AT+CLASS\r\n"; 
-  // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg6, sizeof(tx_msg6));
-  // HAL_Delay(100);
-  // char tx_msg7[] = "AT+PORT\r\n"; 
-  // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg7, sizeof(tx_msg7));
-  // HAL_Delay(100);
-
-  while(!joined)
-  {
-
-    char tx_msg8[] = "AT+JOIN\r\n"; 
-    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg8, sizeof(tx_msg8));
-
-    CDC_Transmit_FS("JOIN ATTEMPT\r\n", 14);
-
-    HAL_Delay(1000);
-
-  }
-
-  CDC_Transmit_FS("JOIN SUCCESS\r\n", 14);
+  // dw_main();
 
   /* USER CODE END 2 */
 
@@ -205,15 +147,12 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    // char tx_msg8[] = "AT+JOIN\r\n"; 
-    // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg8, sizeof(tx_msg8));
-    // HAL_Delay(3000);
     
-    char tx_msg[] = "AT+CMSG=\"Adi<3robot\"\r\n"; 
-    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg, sizeof(tx_msg));
-    HAL_Delay(10);
+    uint8_t tx_msg[4] = {'A', 'T', '\r', '\n'};
 
+    HAL_UART_Transmit(&huart1, tx_msg, 4, 1000);
 
+    HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -488,22 +427,6 @@ static void MX_USART1_UART_Init(void)
 }
 
 /**
-  * Enable DMA controller clock
-  */
-static void MX_DMA_Init(void)
-{
-
-  /* DMA controller clock enable */
-  __HAL_RCC_DMA1_CLK_ENABLE();
-
-  /* DMA interrupt init */
-  /* DMA1_Channel2_3_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Channel2_3_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(DMA1_Channel2_3_IRQn);
-
-}
-
-/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -580,49 +503,22 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
-void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t offset)
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
+  HAL_UART_Receive_IT(&huart1, uart_rx_buf + uart_rx_buf_size, 1);
 
-	static uint16_t last_offset = 0;
+  if(uart_rx_buf_size >= UART_RX_BUF_SIZE)
+  {
+    uart_rx_buf_size = 0;
+  }
 
-	// Ignore if called twice (which will happen on every half buffer)
-	if (offset != last_offset) {
+  uart_rx_buf_size ++;
 
-		// If wrap around reset last_size
-		if (offset < last_offset)
-			last_offset = 0;
-
-    CDC_Transmit_FS(uart_rx_buf + last_offset, offset - last_offset);
-    
-    static uint16_t response_offset = 0;
-    
-    for(uint16_t i = last_offset; i < offset; i++)
-    {
-      if(uart_rx_buf[i] == '+')
-      {
-        response_offset = i;
-        if (offset < response_offset)
-          response_offset = 0;
-
-        // char response[sizeof(joined_msg)];
-        // for (int i = 0; i < sizeof(joined_msg) - 1; i++) {
-        //   response[i] = (uart_rx_buf + response_offset)[i];
-        // }
-        // response[sizeof(joined_msg)] = '\0';
-        // CDC_Transmit_FS(response, sizeof(response));
-        if(memcmp(uart_rx_buf + response_offset, joined_msg, sizeof(joined_msg) - 1) == 0)
-        {
-          joined = 1;
-          break;
-        }
-      }
-    }
-
-    last_offset = offset;
-
-
-	}
-
+  if(uart_rx_buf[uart_rx_buf_size] == '\r')
+  {
+    CDC_Transmit_FS(uart_rx_buf, uart_rx_buf_size);
+    uart_rx_buf_size = 0;
+  }
 }
 
 /* USER CODE END 4 */

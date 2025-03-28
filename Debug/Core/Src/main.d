@@ -39,19 +39,7 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  C:/Users/terry/MICHIGAN/ROB_450/NEAR/compiler/inc/compiler.h \
  ../USB_DEVICE/App/usb_device.h \
  ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h \
- ../USB_DEVICE/Target/usbd_conf.h ../Core/Inc/ex_main.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/decadriver/inc/deca_device_api.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/decadriver/inc/deca_regs.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/decadriver/inc/deca_version.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/platform/inc/deca_spi.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/decadriver/inc/deca_types.h \
- ../USB_DEVICE/App/usbd_cdc_if.h \
- ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc/usbd_cdc.h \
- ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h \
- ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h \
- ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h \
- ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h \
- ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h
+ ../USB_DEVICE/Target/usbd_conf.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal.h:
 ../Core/Inc/stm32f0xx_hal_conf.h:
@@ -94,16 +82,3 @@ C:/Users/terry/MICHIGAN/ROB_450/NEAR/compiler/inc/compiler.h:
 ../USB_DEVICE/App/usb_device.h:
 ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h:
 ../USB_DEVICE/Target/usbd_conf.h:
-../Core/Inc/ex_main.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/decadriver/inc/deca_device_api.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/decadriver/inc/deca_regs.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/decadriver/inc/deca_version.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/platform/inc/deca_spi.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/decadriver/inc/deca_types.h:
-../USB_DEVICE/App/usbd_cdc_if.h:
-../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc/usbd_cdc.h:
-../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h:
-../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h:
-../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h:
-../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h:
-../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h:
