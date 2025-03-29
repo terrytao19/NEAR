@@ -74,7 +74,7 @@ static void MX_TIM3_Init(void);
 USBD_HandleTypeDef hUSBDDevice;
 uint8_t uart_rx_buf[UART_RX_BUF_SIZE];
 
-bool joined = 0;
+bool joined = 1;
 
 char joined_msg[] = "+JOIN: Network joined";
 
@@ -118,7 +118,7 @@ int main(void)
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
   HAL_GPIO_WritePin(E5_NRST_GPIO_Port, E5_NRST_Pin, GPIO_PIN_SET);
-  HAL_Delay(2000);
+  HAL_Delay(100);
   HAL_GPIO_WritePin(E5_NRST_GPIO_Port, E5_NRST_Pin, GPIO_PIN_RESET);
   HAL_Delay(100);
   HAL_GPIO_WritePin(E5_NRST_GPIO_Port, E5_NRST_Pin, GPIO_PIN_SET);
@@ -126,24 +126,6 @@ int main(void)
 
   HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uart_rx_buf, UART_RX_BUF_SIZE);
 
-  // uint8_t tx_msg_ping[4] = {'A', 'T', '\r', '\n'};
-  // HAL_UART_Transmit_IT(&huart1, tx_msg_ping, 4);
-  // HAL_Delay(100);
-  // char tx_msg[] = "AT+ FDEFAULT= SEEED\r\n"; 
-  // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg, sizeof(tx_msg));
-  // HAL_Delay(100);
-  // char tx_msg_[] = "AT+ID=DevEui\r\n"; 
-  // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_, sizeof(tx_msg_));
-  // HAL_Delay(100);
-  // char tx_msg2[] = "AT+ID=AppEui\r\n";
-  // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg2, sizeof(tx_msg2));
-  // HAL_Delay(100);
-  // char tx_msg_1[] = "AT+ID=DevAddr\r\n"; 
-  // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_1, sizeof(tx_msg_1));
-  // HAL_Delay(100);
-  // char tx_msg[] = "AT+VER?\r\n"; 
-  // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg, sizeof(tx_msg));
-  // HAL_Delay(100);
   char tx_msg4[] = "AT+DR=US915\r\n"; 
   HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg4, sizeof(tx_msg4));
   HAL_Delay(100);
@@ -166,24 +148,10 @@ int main(void)
   char tx_msg0[] = "AT+KEY=APPKEY,\"B8AC2B18AE0F96A0FF83A63E33D0BA15\"\r\n"; 
   HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg0, sizeof(tx_msg0));
   HAL_Delay(500);
-  // char tx_msg1[] = "AT+KEY=NWKSKEY,\"B8AC2B18AE0F96A0FF83A63E33D0BA15\"\r\n"; 
-  // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg1, sizeof(tx_msg1));
-  // HAL_Delay(100);  
-  // // char tx_msg2[] = "AT+ID=AppEui,\"0000000000000000\"\r\n";
-  // // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg2, sizeof(tx_msg2));
-  // // HAL_Delay(100);
 
   char tx_msg3[] = "AT+MODE= LWOTAA\r\n";
   HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg3, sizeof(tx_msg3));
   HAL_Delay(100);
-
-
-  // char tx_msg6[] = "AT+CLASS\r\n"; 
-  // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg6, sizeof(tx_msg6));
-  // HAL_Delay(100);
-  // char tx_msg7[] = "AT+PORT\r\n"; 
-  // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg7, sizeof(tx_msg7));
-  // HAL_Delay(100);
 
   while(!joined)
   {
@@ -193,11 +161,13 @@ int main(void)
 
     CDC_Transmit_FS("JOIN ATTEMPT\r\n", 14);
 
-    HAL_Delay(1000);
+    HAL_Delay(100);
 
   }
 
   CDC_Transmit_FS("JOIN SUCCESS\r\n", 14);
+
+  dw_main();
 
   /* USER CODE END 2 */
 
@@ -209,9 +179,9 @@ int main(void)
     // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg8, sizeof(tx_msg8));
     // HAL_Delay(3000);
     
-    char tx_msg[] = "AT+CMSG=\"Adi<3robot\"\r\n"; 
-    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg, sizeof(tx_msg));
-    HAL_Delay(10);
+    // char tx_msg[] = "AT+CMSG=\"Adi<3robot\"\r\n"; 
+    // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg, sizeof(tx_msg));
+    // HAL_Delay(10);
 
 
     /* USER CODE END WHILE */
@@ -603,13 +573,6 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t offset)
         response_offset = i;
         if (offset < response_offset)
           response_offset = 0;
-
-        // char response[sizeof(joined_msg)];
-        // for (int i = 0; i < sizeof(joined_msg) - 1; i++) {
-        //   response[i] = (uart_rx_buf + response_offset)[i];
-        // }
-        // response[sizeof(joined_msg)] = '\0';
-        // CDC_Transmit_FS(response, sizeof(response));
         if(memcmp(uart_rx_buf + response_offset, joined_msg, sizeof(joined_msg) - 1) == 0)
         {
           joined = 1;

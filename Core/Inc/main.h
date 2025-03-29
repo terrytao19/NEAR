@@ -41,6 +41,9 @@ extern "C" {
 #define EX_05B_DEF 1 // TWR RESPONDER
 // # define EX_03A_DEF 1 // TX WAIT
 // # define EX_03B_DEF 1 // RX WAIT
+#define RESPONDER_NUM 1
+
+#define TOTAL_RESPONDERS 2
 
 /* USER CODE END Includes */
 

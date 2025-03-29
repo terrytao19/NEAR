@@ -43,10 +43,14 @@ static dwt_config_t config = {
 #define TX_ANT_DLY 16436
 #define RX_ANT_DLY 16436
 
+const static uint8 responder_addresses[] = {'W', 'A', 
+                                      '0', '1'};
+const static uint8 responder_address[] = {responder_addresses[2 * RESPONDER_NUM], responder_addresses[2 * RESPONDER_NUM + 1]};
+
 /* Frames used in the ranging process. See NOTE 2 below. */
-static uint8 rx_poll_msg[] = {0x41, 0x88, 0, 0xCA, 0xDE, 'W', 'A', 'V', 'E', 0x21, 0, 0};
-static uint8 tx_resp_msg[] = {0x41, 0x88, 0, 0xCA, 0xDE, 'V', 'E', 'W', 'A', 0x10, 0x02, 0, 0, 0, 0};
-static uint8 rx_final_msg[] = {0x41, 0x88, 0, 0xCA, 0xDE, 'W', 'A', 'V', 'E', 0x23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+static uint8 rx_poll_msg[] = {0x41, 0x88, 0, 0xCA, 0xDE, responder_address[0], responder_address[1], 'V', 'E', 0x21, 0, 0};
+static uint8 tx_resp_msg[] = {0x41, 0x88, 0, 0xCA, 0xDE, 'V', 'E', responder_address[0], responder_address[1], 0x10, 0x02, 0, 0, 0, 0};
+static uint8 rx_final_msg[] = {0x41, 0x88, 0, 0xCA, 0xDE, responder_address[0], responder_address[1], 'V', 'E', 0x23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 /* Length of the common part of the message (up to and including the function code, see NOTE 2 below). */
 #define ALL_MSG_COMMON_LEN 10
 /* Index to access some of the fields in the frames involved in the process. */
@@ -73,11 +77,11 @@ static uint32 status_reg = 0;
 /* Delay between frames, in UWB microseconds. See NOTE 4 below. */
 /* This is the delay from Frame RX timestamp to TX reply timestamp used for calculating/setting the DW1000's delayed TX function. This includes the
  * frame length of approximately 2.46 ms with above configuration. */
-#define POLL_RX_TO_RESP_TX_DLY_UUS 6000
+#define POLL_RX_TO_RESP_TX_DLY_UUS 5000
 /* This is the delay from the end of the frame transmission to the enable of the receiver, as programmed for the DW1000's wait for response feature. */
-#define RESP_TX_TO_FINAL_RX_DLY_UUS 500
+#define RESP_TX_TO_FINAL_RX_DLY_UUS 100
 /* Receive final timeout. See NOTE 5 below. */
-#define FINAL_RX_TIMEOUT_UUS 8400
+#define FINAL_RX_TIMEOUT_UUS 5500
 /* Preamble timeout, in multiple of PAC size. See NOTE 6 below. */
 #define PRE_TIMEOUT 8
 
@@ -97,7 +101,7 @@ static double tof;
 static double distance;
 
 /* String used to display measured distance on LCD screen (16 characters maximum). */
-char dist_str[16] = {0};
+char dist_str[18] = {0};
 
 /* Declaration of static functions. */
 static uint64 get_tx_timestamp_u64(void);
@@ -283,10 +287,10 @@ int dw_main(void)
                         distance = tof * SPEED_OF_LIGHT;
 
                         /* Display computed distance on LCD. */
-                        sprintf(dist_str, "DIST: %3.2f m", distance);
+                        sprintf(dist_str, "DIST: %3.2f m\r\n", distance);
                         // lcd_display_str(dist_str);
 
-                        //  CDC_Transmit_FS((uint8_t*) dist_str, sizeof(dist_str));
+                         CDC_Transmit_FS((uint8_t*) dist_str, sizeof(dist_str));
 
                     }
                 }
