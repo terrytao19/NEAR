@@ -30,16 +30,21 @@
 
 /* Default communication configuration. We use here EVK1000's default mode (mode 3). */
 static dwt_config_t config = {
-    2,               /* Channel number. */
+    4,               /* Channel number. */
     DWT_PRF_64M,     /* Pulse repetition frequency. */
-    DWT_PLEN_2048,   /* Preamble length. Used in TX only. */
+    DWT_PLEN_1024,   /* Preamble length. Used in TX only. */
     DWT_PAC32,       /* Preamble acquisition chunk size. Used in RX only. */
     9,               /* TX preamble code. Used in TX only. */
     9,               /* RX preamble code. Used in RX only. */
     1,               /* 0 to use standard SFD, 1 to use non-standard SFD. */
-    DWT_BR_110K,     /* Data rate. */
+    DWT_BR_850K,     /* Data rate. */
     DWT_PHRMODE_STD, /* PHY header mode. */
-    (2049 + 64 - 32) /* SFD timeout (preamble length + 1 + SFD length - PAC size). Used in RX only. */
+    (1025 + 64 - 32) /* SFD timeout (preamble length + 1 + SFD length - PAC size). Used in RX only. */
+};
+
+static dwt_txconfig_t tx_config = {
+    TC_PGDELAY_CH4,
+    0x00000000      /* Crank that shit */
 };
 
 /* Default antenna delay values for 64 MHz PRF. See NOTE 1 below. */
@@ -84,9 +89,9 @@ static uint32 status_reg = 0;
 #define POLL_TX_TO_RESP_RX_DLY_UUS 300
 /* This is the delay from Frame RX timestamp to TX reply timestamp used for calculating/setting the DW1000's delayed TX function. This includes the
 * frame length of approximately 2.66 ms with above configuration. */
-#define RESP_RX_TO_FINAL_TX_DLY_UUS 5000
+#define RESP_RX_TO_FINAL_TX_DLY_UUS 2500
 /* Receive response timeout. See NOTE 5 below. */
-#define RESP_RX_TIMEOUT_UUS 5500
+#define RESP_RX_TIMEOUT_UUS 2800
 /* Preamble timeout, in multiple of PAC size. See NOTE 6 below. */
 #define PRE_TIMEOUT 8
 
@@ -131,6 +136,9 @@ int dw_main(void)
 
     /* Configure DW1000. See NOTE 7 below. */
     dwt_configure(&config);
+
+    /* Apply TX config */
+    dwt_configuretxrf(&tx_config);
 
     dwt_setdblrxbuffmode(0);
 

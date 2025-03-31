@@ -74,7 +74,7 @@ static void MX_TIM3_Init(void);
 USBD_HandleTypeDef hUSBDDevice;
 uint8_t uart_rx_buf[UART_RX_BUF_SIZE];
 
-bool joined = 1;
+bool joined = 0;
 
 char joined_msg[] = "+JOIN: Network joined";
 
@@ -118,7 +118,7 @@ int main(void)
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
   HAL_GPIO_WritePin(E5_NRST_GPIO_Port, E5_NRST_Pin, GPIO_PIN_SET);
-  HAL_Delay(100);
+  HAL_Delay(2000);
   HAL_GPIO_WritePin(E5_NRST_GPIO_Port, E5_NRST_Pin, GPIO_PIN_RESET);
   HAL_Delay(100);
   HAL_GPIO_WritePin(E5_NRST_GPIO_Port, E5_NRST_Pin, GPIO_PIN_SET);
@@ -155,19 +155,42 @@ int main(void)
 
   while(!joined)
   {
+    char tx_msg_[] = "AT+ID=DevEui\r\n"; 
+    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_, sizeof(tx_msg_));
+    HAL_Delay(1000);
+    
+    char tx_msg2[] = "AT+ID=AppEui\r\n";
+    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg2, sizeof(tx_msg2));
+    HAL_Delay(1000);
+
+    char tx_msg_class[] = "AT+CLASS=C\r\n";
+    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_class, sizeof(tx_msg_class));
+    HAL_Delay(1000);
+
+    // char tx_msg_mc[] = "AT+LW=MC,OFF\r\n";
+    // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_class, sizeof(tx_msg_class));
+    // HAL_Delay(1000);
+
+    char tx_msg_durmx[] = "AT+LW=DUMRX,ON\r\n";
+    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_durmx, sizeof(tx_msg_durmx));
+    HAL_Delay(1000);
+
+    char tx_msg_dcmrx[] = "AT+LW=DCMRX,ON\r\n";
+    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_dcmrx, sizeof(tx_msg_dcmrx));
+    HAL_Delay(1000);
 
     char tx_msg8[] = "AT+JOIN\r\n"; 
     HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg8, sizeof(tx_msg8));
 
     CDC_Transmit_FS("JOIN ATTEMPT\r\n", 14);
 
-    HAL_Delay(100);
+    HAL_Delay(1000);
 
   }
 
   CDC_Transmit_FS("JOIN SUCCESS\r\n", 14);
 
-  dw_main();
+  // dw_main();
 
   /* USER CODE END 2 */
 
@@ -179,9 +202,9 @@ int main(void)
     // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg8, sizeof(tx_msg8));
     // HAL_Delay(3000);
     
-    // char tx_msg[] = "AT+CMSG=\"Adi<3robot\"\r\n"; 
-    // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg, sizeof(tx_msg));
-    // HAL_Delay(10);
+    char tx_msg[] = "AT+MSG=\"Adi<3robot\"\r\n"; 
+    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg, sizeof(tx_msg));
+    HAL_Delay(10);
 
 
     /* USER CODE END WHILE */
