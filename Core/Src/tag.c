@@ -1,8 +1,32 @@
-#include "ex_main.h"
+/*! ----------------------------------------------------------------------------
+*  @file    main.c
+*  @brief   Double-sided two-way ranging (DS TWR) initiator example code
+*
+*           This is a simple code example which acts as the initiator in a DS TWR distance measurement exchange. This application sends a "poll"
+*           frame (recording the TX time-stamp of the poll), and then waits for a "response" message expected from the "DS TWR responder" example
+*           code (companion to this application). When the response is received its RX time-stamp is recorded and we send a "final" message to
+*           complete the exchange. The final message contains all the time-stamps recorded by this application, including the calculated/predicted TX
+*           time-stamp for the final message itself. The companion "DS TWR responder" example application works out the time-of-flight over-the-air
+*           and, thus, the estimated distance between the two devices.
+*
+* @attention
+*
+* Copyright 2015 (c) Decawave Ltd, Dublin, Ireland.
+*
+* All rights reserved.
+*
+* @author Decawave
+*/
 
-#ifdef TAG_ID
+#include "tag.h"
 
-#define APP_NAME "TAG"
+#ifdef TAG
+
+/* Example application name and version to display on LCD screen. */
+#define APP_NAME "DS TWR INIT v1.2"
+
+/* Inter-ranging delay period, in milliseconds. */
+#define RNG_DELAY_MS 10
 
 /* Default communication configuration. We use here EVK1000's default mode (mode 3). */
 static dwt_config_t config = {
@@ -28,7 +52,12 @@ static dwt_txconfig_t tx_config = {
 #define RX_ANT_DLY DLY
 
 // initializer source address = VE
+<<<<<<< HEAD
 
+=======
+static uint8 responder_addresses[] = {'W', 'A', 
+                                      '0', '1'};
+>>>>>>> 20e9020e59d27323b34c59132f8fdd287c4675ee
 /* Frames used in the ranging process. See NOTE 2 below. */
 static uint8 tx_poll_msg[] = {0x41, 0x88, 0, 0xCA, 0xDE, 'W', 'A', 'V', 'E', 0x21, 0, 0};
 static uint8 rx_resp_msg[] = {0x41, 0x88, 0, 0xCA, 0xDE, 'V', 'E', 'W', 'A', 0x10, 0x02, 0, 0, 0, 0};
@@ -91,7 +120,11 @@ static void final_msg_set_ts(uint8 *ts_field, uint64 ts);
 *
 * @return none
 */
+<<<<<<< HEAD
 int dw_main(void)
+=======
+int tag_main(void)
+>>>>>>> 20e9020e59d27323b34c59132f8fdd287c4675ee
 {
     /* Display application name on LCD. */
     // lcd_display_str(APP_NAME);
