@@ -223,19 +223,19 @@ int main(void)
 
 //  CDC_Transmit_FS("JOIN SUCCESS\r\n", 14);
 
-//   dw_main();
+   dw_main();
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  HAL_Delay(2000);
-  send_at_msg("AT+MODE=TEST\r\n");
-  HAL_Delay(100);
-  send_at_msg("AT+TEST=RFCFG,915,SF8,500,12,15,14,ON,OFF,OFF\r\n");
-  HAL_Delay(100);
-  send_at_msg("AT+TEST=RXLRPKT\r\n");
+//  HAL_Delay(2000);
+//  send_at_msg("AT+MODE=TEST\r\n");
+//  HAL_Delay(100);
+//  send_at_msg("AT+TEST=RFCFG,915,SF8,500,12,15,14,ON,OFF,OFF\r\n");
+//  HAL_Delay(100);
+//  send_at_msg("AT+TEST=RXLRPKT\r\n");
 
   while (1)
   {
