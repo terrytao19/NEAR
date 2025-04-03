@@ -80,6 +80,28 @@ char joined_msg[] = "+JOIN: Network joined";
 
 /* USER CODE END 0 */
 
+void send_at_msg(char* msg) {
+	  HAL_UART_Transmit_IT(&huart1, (uint8_t*) msg, strlen(msg));
+}
+
+void node_recv(uint32_t timeout_ms) {
+	send_at_msg("AT+TEST=RXLRPKT\r\n");
+	HAL_Delay(timeout_ms);
+}
+
+void node_send() {
+	uint16_t count = 0;
+	char data[32];
+	char cmd[128];
+
+	memset(data, 0, sizeof(data));
+	sprintf(data, "%04X", count);
+	sprintf(cmd, "AT+TEST=TXLRPKT,\"5345454544%s\"\r\n", data);
+
+	send_at_msg(cmd);
+	HAL_Delay(100);
+}
+
 /**
   * @brief  The application entry point.
   * @retval int
@@ -117,6 +139,8 @@ int main(void)
   MX_USB_DEVICE_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
+
+  // Startup sequence for LoRa module
   HAL_GPIO_WritePin(E5_NRST_GPIO_Port, E5_NRST_Pin, GPIO_PIN_SET);
   HAL_Delay(2000);
   HAL_GPIO_WritePin(E5_NRST_GPIO_Port, E5_NRST_Pin, GPIO_PIN_RESET);
@@ -124,87 +148,119 @@ int main(void)
   HAL_GPIO_WritePin(E5_NRST_GPIO_Port, E5_NRST_Pin, GPIO_PIN_SET);
   HAL_Delay(100);
 
+  // LoRa command reception callback
   HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uart_rx_buf, UART_RX_BUF_SIZE);
 
-  char tx_msg4[] = "AT+DR=US915\r\n"; 
-  HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg4, sizeof(tx_msg4));
-  HAL_Delay(100);
+//  char tx_msg4[] = "AT+DR=US915\r\n";
+//  HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg4, sizeof(tx_msg4));
+//  HAL_Delay(100);
+//
+//  char tx_msg5[] = "AT+CH\r\n";
+//  HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg5, sizeof(tx_msg5));
+//  HAL_Delay(100);
+//
+//  for(int i = 0; i < 72; i++)
+//  {
+//    if(i < 8 || i > 72)
+//    {
+//      char tx_msg5_[14];
+//      sprintf(tx_msg5_, "AT+CH=%d, OFF", i);
+//      HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg5_, sizeof(tx_msg5_));
+//    }
+//    HAL_Delay(50);
+//  }
+//
+//  char tx_msg0[] = "AT+KEY=APPKEY,\"B8AC2B18AE0F96A0FF83A63E33D0BA15\"\r\n";
+//  HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg0, sizeof(tx_msg0));
+//  HAL_Delay(500);
+//
+//  char tx_msg3[] = "AT+MODE= LWOTAA\r\n";
+//  HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg3, sizeof(tx_msg3));
+//  HAL_Delay(100);
 
-  char tx_msg5[] = "AT+CH\r\n"; 
-  HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg5, sizeof(tx_msg5));
-  HAL_Delay(100);
-
-  for(int i = 0; i < 72; i++)
-  {
-    if(i < 8 || i > 72)
-    {
-      char tx_msg5_[14];
-      sprintf(tx_msg5_, "AT+CH=%d, OFF", i);
-      HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg5_, sizeof(tx_msg5_));
-    }
-    HAL_Delay(50);
-  }
-
-  char tx_msg0[] = "AT+KEY=APPKEY,\"B8AC2B18AE0F96A0FF83A63E33D0BA15\"\r\n"; 
-  HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg0, sizeof(tx_msg0));
-  HAL_Delay(500);
-
-  char tx_msg3[] = "AT+MODE= LWOTAA\r\n";
-  HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg3, sizeof(tx_msg3));
-  HAL_Delay(100);
-
-  while(!joined)
-  {
-    char tx_msg_[] = "AT+ID=DevEui\r\n"; 
-    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_, sizeof(tx_msg_));
-    HAL_Delay(1000);
-    
-    char tx_msg2[] = "AT+ID=AppEui\r\n";
-    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg2, sizeof(tx_msg2));
-    HAL_Delay(1000);
-
-    char tx_msg_class[] = "AT+CLASS=C\r\n";
-    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_class, sizeof(tx_msg_class));
-    HAL_Delay(1000);
+//  while(!joined)
+//  {
+//    char tx_msg_[] = "AT+ID=DevEui\r\n";
+//    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_, sizeof(tx_msg_));
+//    HAL_Delay(1000);
+//
+//    char tx_msg2[] = "AT+ID=AppEui\r\n";
+//    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg2, sizeof(tx_msg2));
+//    HAL_Delay(1000);
+//
+//    char tx_msg_class[] = "AT+CLASS=C\r\n";
+//    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_class, sizeof(tx_msg_class));
+//    HAL_Delay(1000);
 
     // char tx_msg_mc[] = "AT+LW=MC,OFF\r\n";
     // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_class, sizeof(tx_msg_class));
     // HAL_Delay(1000);
 
-    char tx_msg_durmx[] = "AT+LW=DUMRX,ON\r\n";
-    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_durmx, sizeof(tx_msg_durmx));
-    HAL_Delay(1000);
+//    char tx_msg_durmx[] = "AT+LW=DUMRX,ON\r\n";
+//    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_durmx, sizeof(tx_msg_durmx));
+//    HAL_Delay(1000);
+//
+//    char tx_msg_dcmrx[] = "AT+LW=DCMRX,ON\r\n";
+//    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_dcmrx, sizeof(tx_msg_dcmrx));
+//    HAL_Delay(1000);
+//
+//    char tx_msg_dr[] = "AT+LW=CDR\r\n";
+//	HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_dr, sizeof(tx_msg_dr));
+//	HAL_Delay(1000);
+//
+//	char tx_msg_adr[] = "AT+ADR=?\r\n";
+//	HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_adr, sizeof(tx_msg_adr));
+//	HAL_Delay(1000);
+//
+//    char tx_msg8[] = "AT+JOIN\r\n";
+//    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg8, sizeof(tx_msg8));
+//
+//    CDC_Transmit_FS("JOIN ATTEMPT\r\n", 14);
+//
+//    HAL_Delay(2000);
+//
+//  }
 
-    char tx_msg_dcmrx[] = "AT+LW=DCMRX,ON\r\n";
-    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_dcmrx, sizeof(tx_msg_dcmrx));
-    HAL_Delay(1000);
+//  CDC_Transmit_FS("JOIN SUCCESS\r\n", 14);
 
-    char tx_msg8[] = "AT+JOIN\r\n"; 
-    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg8, sizeof(tx_msg8));
-
-    CDC_Transmit_FS("JOIN ATTEMPT\r\n", 14);
-
-    HAL_Delay(1000);
-
-  }
-
-  CDC_Transmit_FS("JOIN SUCCESS\r\n", 14);
-
-  // dw_main();
+//   dw_main();
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+  HAL_Delay(2000);
+  send_at_msg("AT+MODE=TEST\r\n");
+  HAL_Delay(100);
+  send_at_msg("AT+TEST=RFCFG,915,SF8,500,12,15,14,ON,OFF,OFF\r\n");
+  HAL_Delay(100);
+  send_at_msg("AT+TEST=RXLRPKT\r\n");
+
   while (1)
   {
-    // char tx_msg8[] = "AT+JOIN\r\n"; 
-    // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg8, sizeof(tx_msg8));
-    // HAL_Delay(3000);
+//	  send_at_msg("AT+TEST=TXLRSTR, \"Hello Cruel World\"\r\n");
+//	  HAL_Delay(100);
+
+//	  send_at_msg("AT+MODE=TEST\r\n");
+//	  HAL_Delay(100);
+
+//	  node_recv(2000);
+//	  node_send();
+
+//	   char tx_msg8[] = "AT\r\n";
+//	   HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg8, sizeof(tx_msg8));
+
+//     char tx_msg8[] = "AT+JOIN\r\n";
+//     HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg8, sizeof(tx_msg8));
+//     HAL_Delay(3000);
     
-    char tx_msg[] = "AT+MSG=\"Adi<3robot\"\r\n"; 
-    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg, sizeof(tx_msg));
-    HAL_Delay(10);
+//    char tx_msg[] = "AT+MSG=\"Adi<3robot\"\r\n";
+//    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg, sizeof(tx_msg));
+//    HAL_Delay(500);
+
+//	  send_at_msg("AT+MODE=TEST\r\n");
+//	  send_at_msg("AT+TEST=RFCFG,866,SF12,125,12,15,14,ON,OFF,OFF\r\n");
 
 
     /* USER CODE END WHILE */
