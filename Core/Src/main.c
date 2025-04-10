@@ -1,6 +1,6 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
+  **************w***************************************************************
   * @file           : main.c
   * @brief          : Main program body
   ******************************************************************************
@@ -223,7 +223,17 @@ int main(void)
 
 //  CDC_Transmit_FS("JOIN SUCCESS\r\n", 14);
 
-   dw_main();
+  #ifdef FLASH_TAG
+    tag_main();
+  #endif
+
+  #ifdef FLASH_ANCHOR
+    anchor_main();
+  #endif
+
+  #ifdef EX_02A_DEF
+    dw_main();
+  #endif
 
   /* USER CODE END 2 */
 

@@ -1,6 +1,6 @@
 ################################################################################
 # Automatically-generated file. Do not edit!
-# Toolchain: GNU Tools for STM32 (13.3.rel1)
+# Toolchain: GNU Tools for STM32 (12.3.rel1)
 ################################################################################
 
 ELF_SRCS := 
@@ -22,9 +22,9 @@ C_DEPS :=
 
 # Every subdirectory with source files must be described here
 SUBDIRS := \
+Core/Src \
 Core/Src/ex_05a_ds_twr_init \
 Core/Src/ex_05b_ds_twr_resp \
-Core/Src \
 Core/Startup \
 Drivers/STM32F0xx_HAL_Driver/Src \
 Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src \

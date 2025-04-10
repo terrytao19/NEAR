@@ -35,11 +35,11 @@ platform/src/deca_spi.o: ../platform/src/deca_spi.c ../Core/Inc/main.h \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_tim_ex.h \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart.h \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart_ex.h \
- C:/Users/twhel/Documents/Rob450/nearfield/NEAR/platform/inc/port.h \
- C:/Users/twhel/Documents/Rob450/nearfield/NEAR/compiler/inc/compiler.h \
- C:/Users/twhel/Documents/Rob450/nearfield/NEAR/platform/inc/deca_spi.h \
- C:/Users/twhel/Documents/Rob450/nearfield/NEAR/decadriver/inc/deca_types.h \
- C:/Users/twhel/Documents/Rob450/nearfield/NEAR/decadriver/inc/deca_device_api.h \
+ C:/Users/terry/MICHIGAN/ROB_450/NEAR/platform/inc/port.h \
+ C:/Users/terry/MICHIGAN/ROB_450/NEAR/compiler/inc/compiler.h \
+ C:/Users/terry/MICHIGAN/ROB_450/NEAR/platform/inc/deca_spi.h \
+ C:/Users/terry/MICHIGAN/ROB_450/NEAR/decadriver/inc/deca_types.h \
+ C:/Users/terry/MICHIGAN/ROB_450/NEAR/decadriver/inc/deca_device_api.h \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_def.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal.h:
@@ -78,9 +78,9 @@ platform/src/deca_spi.o: ../platform/src/deca_spi.c ../Core/Inc/main.h \
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_tim_ex.h:
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart.h:
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart_ex.h:
-C:/Users/twhel/Documents/Rob450/nearfield/NEAR/platform/inc/port.h:
-C:/Users/twhel/Documents/Rob450/nearfield/NEAR/compiler/inc/compiler.h:
-C:/Users/twhel/Documents/Rob450/nearfield/NEAR/platform/inc/deca_spi.h:
-C:/Users/twhel/Documents/Rob450/nearfield/NEAR/decadriver/inc/deca_types.h:
-C:/Users/twhel/Documents/Rob450/nearfield/NEAR/decadriver/inc/deca_device_api.h:
+C:/Users/terry/MICHIGAN/ROB_450/NEAR/platform/inc/port.h:
+C:/Users/terry/MICHIGAN/ROB_450/NEAR/compiler/inc/compiler.h:
+C:/Users/terry/MICHIGAN/ROB_450/NEAR/platform/inc/deca_spi.h:
+C:/Users/terry/MICHIGAN/ROB_450/NEAR/decadriver/inc/deca_types.h:
+C:/Users/terry/MICHIGAN/ROB_450/NEAR/decadriver/inc/deca_device_api.h:
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_def.h:

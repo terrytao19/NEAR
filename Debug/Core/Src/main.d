@@ -35,8 +35,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_tim_ex.h \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart.h \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart_ex.h \
- C:/Users/twhel/Documents/Rob450/nearfield/NEAR/platform/inc/port.h \
- C:/Users/twhel/Documents/Rob450/nearfield/NEAR/compiler/inc/compiler.h \
+ C:/Users/terry/MICHIGAN/ROB_450/NEAR/platform/inc/port.h \
+ C:/Users/terry/MICHIGAN/ROB_450/NEAR/compiler/inc/compiler.h \
  ../USB_DEVICE/App/usb_device.h \
  ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h \
  ../USB_DEVICE/Target/usbd_conf.h
@@ -77,8 +77,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_tim_ex.h:
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart.h:
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart_ex.h:
-C:/Users/twhel/Documents/Rob450/nearfield/NEAR/platform/inc/port.h:
-C:/Users/twhel/Documents/Rob450/nearfield/NEAR/compiler/inc/compiler.h:
+C:/Users/terry/MICHIGAN/ROB_450/NEAR/platform/inc/port.h:
+C:/Users/terry/MICHIGAN/ROB_450/NEAR/compiler/inc/compiler.h:
 ../USB_DEVICE/App/usb_device.h:
 ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h:
 ../USB_DEVICE/Target/usbd_conf.h:

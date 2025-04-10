@@ -1,0 +1,5 @@
+../Core/Inc/id.h:19:11:get_anchor_id	16	static
+../Core/Src/tag.c:109:5:tag_main	64	static
+../Core/Src/tag.c:268:15:get_tx_timestamp_u64	56	static
+../Core/Src/tag.c:292:15:get_rx_timestamp_u64	56	static
+../Core/Src/tag.c:317:13:final_msg_set_ts	40	static

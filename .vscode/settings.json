@@ -9,6 +9,9 @@
         "usb_device.h": "c",
         "ex_02a_main.h": "c",
         "stm32f0xx.h": "c",
-        "ex_01a_main.h": "c"
+        "ex_01a_main.h": "c",
+        "anchor.h": "c",
+        "stdint.h": "c",
+        "stm32f0xx_hal.h": "c"
     }
 }

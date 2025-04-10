@@ -35,8 +35,8 @@ Core/Src/stm32f0xx_hal_msp.o: ../Core/Src/stm32f0xx_hal_msp.c \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_tim_ex.h \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart.h \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart_ex.h \
- C:/Users/twhel/Documents/Rob450/nearfield/NEAR/platform/inc/port.h \
- C:/Users/twhel/Documents/Rob450/nearfield/NEAR/compiler/inc/compiler.h
+ C:/Users/terry/MICHIGAN/ROB_450/NEAR/platform/inc/port.h \
+ C:/Users/terry/MICHIGAN/ROB_450/NEAR/compiler/inc/compiler.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal.h:
 ../Core/Inc/stm32f0xx_hal_conf.h:
@@ -74,5 +74,5 @@ Core/Src/stm32f0xx_hal_msp.o: ../Core/Src/stm32f0xx_hal_msp.c \
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_tim_ex.h:
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart.h:
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart_ex.h:
-C:/Users/twhel/Documents/Rob450/nearfield/NEAR/platform/inc/port.h:
-C:/Users/twhel/Documents/Rob450/nearfield/NEAR/compiler/inc/compiler.h:
+C:/Users/terry/MICHIGAN/ROB_450/NEAR/platform/inc/port.h:
+C:/Users/terry/MICHIGAN/ROB_450/NEAR/compiler/inc/compiler.h:

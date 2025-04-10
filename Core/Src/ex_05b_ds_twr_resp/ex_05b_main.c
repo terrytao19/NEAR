@@ -45,8 +45,8 @@ static dwt_txconfig_t tx_config = {
 };
 
 /* Default antenna delay values for 64 MHz PRF. See NOTE 1 below. */
-#define TX_ANT_DLY DLY
-#define RX_ANT_DLY DLY
+#define TX_ANT_DLY ANT_DLY
+#define RX_ANT_DLY ANT_DLY
 
 const static uint8 responder_addresses[] = {'W', 'A', 
                                       '0', '1'};
