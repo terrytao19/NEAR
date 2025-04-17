@@ -1,4 +1,5 @@
 #include "anchor.h"
+#include "lcd.h"
 
 #ifdef FLASH_ANCHOR
 

@@ -152,7 +152,20 @@ int tag_main(void)
     /* Loop forever initiating ranging exchanges. */
     while (1)
     {
+
+        dwt_rxenable(DWT_START_RX_IMMEDIATE);
         
+        /* We should listen to the airwaves before transmitting the first poll to not interfere with other tags */
+        while (!((status_reg = dwt_read32bitreg(SYS_STATUS_ID)) & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR)))
+        {
+        };
+
+        if (status_reg & SYS_STATUS_RXFCG)
+        {
+            HAL_Delay(10);
+            continue;
+        }
+                
         memcpy(tx_poll_msg + TX_POLL_MSG_ANCHOR_ID_IDX, get_anchor_id(current_anchor), 2);
         memcpy(rx_resp_msg + RX_RESP_MSG_ANCHOR_ID_IDX, get_anchor_id(current_anchor), 2);
         memcpy(tx_final_msg + TX_FINAL_MSG_ANCHOR_ID_IDX, get_anchor_id(current_anchor), 2);
