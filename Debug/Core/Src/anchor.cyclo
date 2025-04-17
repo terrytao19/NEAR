@@ -1,0 +1,5 @@
+../Core/Inc/id.h:22:11:get_anchor_id	1
+../Core/Src/anchor.c:114:5:anchor_main	12
+../Core/Src/anchor.c:343:15:get_tx_timestamp_u64	2
+../Core/Src/anchor.c:367:15:get_rx_timestamp_u64	2
+../Core/Src/anchor.c:392:13:final_msg_get_ts	2

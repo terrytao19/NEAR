@@ -95,7 +95,7 @@ static double tof;
 static double distance;
 
 /* String used to display measured distance on LCD screen (16 characters maximum). */
-char dist_str[26] = {0};
+char dist_str[128] = {0};
 
 /* Declaration of static functions. */
 static uint64 get_tx_timestamp_u64(void);
@@ -111,7 +111,7 @@ static void final_msg_get_ts(const uint8 *ts_field, uint32 *ts);
  *
  * @return none
  */
-int anchor_main(void)
+int anchor_main(void (*send_at_msg_ptr)(char *))
 {
 
     memcpy((rx_poll_msg) + RX_POLL_MSG_ANCHOR_ID_IDX, anchor_id, 2);
@@ -148,6 +148,11 @@ int anchor_main(void)
 
     /* Set preamble timeout for expected frames. See NOTE 6 below. */
     // dwt_setpreambledetecttimeout(PRE_TIMEOUT);
+
+    HAL_Delay(2000);
+    (*send_at_msg_ptr)("AT+MODE=TEST\r\n");
+    HAL_Delay(100);
+    (*send_at_msg_ptr)("AT+TEST=RFCFG,915,SF8,500,12,15,14,ON,OFF,OFF\r\n");
 
     /* Loop forever responding to ranging requests. */
     while (1)
@@ -296,14 +301,12 @@ int anchor_main(void)
                         tof = tof_dtu * DWT_TIME_UNITS;
                         distance = tof * SPEED_OF_LIGHT;
 
-                        dist_str[24] = '\r';
-                        dist_str[25] = '\n';
-
                         /* Display computed distance on LCD. */
-                        sprintf(dist_str, "TAG: %c, DIST: %3.2f m", rx_final_msg[RX_FINAL_MSG_TAG_ID_IDX + 1], distance);
+                        sprintf(dist_str, "AT+TEST=TXLRSTR, \"ANCHOR: %c, TAG: %c, DIST: %3.2f m\"\r\n", anchor_id[1], rx_final_msg[RX_FINAL_MSG_TAG_ID_IDX + 1], distance);
                         // lcd_display_str(dist_str);
 
-                        CDC_Transmit_FS((uint8_t *)dist_str, sizeof(dist_str));
+//                        CDC_Transmit_FS((uint8_t *)dist_str, sizeof(dist_str));
+                        (*send_at_msg_ptr)(dist_str);
                     }
                 }
                 else

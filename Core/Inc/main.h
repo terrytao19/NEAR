@@ -36,8 +36,8 @@ extern "C" {
 
 #define ANT_DLY 16433 // 16436
 
-#define FLASH_TAG
-// #define FLASH_ANCHOR
+//#define FLASH_TAG
+ #define FLASH_ANCHOR
 
 // # define ANCHOR_ID 0x0       // TWR with allocations, id from 0x0 - 0xF
 // # define TAG_ID    0x0       // TWR with allocations, id from 0x0 - 0xF

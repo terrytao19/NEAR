@@ -84,6 +84,8 @@ void send_at_msg(char* msg) {
 	  HAL_UART_Transmit_IT(&huart1, (uint8_t*) msg, strlen(msg));
 }
 
+void (*send_at_msg_ptr)(char* msg);
+
 void node_recv(uint32_t timeout_ms) {
 	send_at_msg("AT+TEST=RXLRPKT\r\n");
 	HAL_Delay(timeout_ms);
@@ -110,6 +112,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+	send_at_msg_ptr = &send_at_msg;
 
   /* USER CODE END 1 */
 
@@ -228,7 +231,7 @@ int main(void)
   #endif
 
   #ifdef FLASH_ANCHOR
-    anchor_main();
+    anchor_main(send_at_msg_ptr);
   #endif
 
   #ifdef EX_02A_DEF
@@ -264,7 +267,7 @@ int main(void)
 //     char tx_msg8[] = "AT+JOIN\r\n";
 //     HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg8, sizeof(tx_msg8));
 //     HAL_Delay(3000);
-    
+
 //    char tx_msg[] = "AT+MSG=\"Adi<3robot\"\r\n";
 //    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg, sizeof(tx_msg));
 //    HAL_Delay(500);

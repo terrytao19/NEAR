@@ -7,4 +7,4 @@
 
 #include "usbd_cdc_if.h"
 
-int anchor_main(void);
+int anchor_main(void (*send_at_msg_ptr)(char *));

@@ -159,6 +159,23 @@ int tag_main(void)
 
         current_anchor = (current_anchor + 1) % total_anchors;
 
+        /* Don't send if another interaction is happening */
+        dwt_rxenable(DWT_START_RX_IMMEDIATE);
+        while (!((status_reg = dwt_read32bitreg(SYS_STATUS_ID)) & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR)))
+        {}
+
+        if (status_reg & SYS_STATUS_RXFCG)
+        {
+        	Sleep(50);
+        	continue;
+        }
+        else
+        {
+        	dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR);
+        	dwt_rxreset();
+        }
+
+
         /* Write frame data to DW1000 and prepare transmission. See NOTE 8 below. */
         tx_poll_msg[ALL_MSG_SN_IDX] = frame_seq_nb;
         dwt_writetxdata(sizeof(tx_poll_msg), tx_poll_msg, 0); /* Zero offset in TX buffer. */
