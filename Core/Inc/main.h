@@ -36,8 +36,8 @@ extern "C" {
 
 #define ANT_DLY 16433 // 16436
 
-#define FLASH_TAG
-// #define FLASH_ANCHOR
+//#define FLASH_TAG
+ #define FLASH_ANCHOR
 
 // # define ANCHOR_ID 0x0       // TWR with allocations, id from 0x0 - 0xF
 // # define TAG_ID    0x0       // TWR with allocations, id from 0x0 - 0xF
@@ -92,6 +92,8 @@ void Error_Handler(void);
 #define DW_MOSI_GPIO_Port GPIOA
 #define VBATT_ADC_Pin GPIO_PIN_0
 #define VBATT_ADC_GPIO_Port GPIOB
+#define SCREEN_EN_AUX_Pin GPIO_PIN_1
+#define SCREEN_EN_AUX_GPIO_Port GPIOB
 #define SCREEN_EN_Pin GPIO_PIN_2
 #define SCREEN_EN_GPIO_Port GPIOB
 #define SD_CS_Pin GPIO_PIN_11

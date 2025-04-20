@@ -29,6 +29,10 @@ Core/Startup \
 Drivers/STM32F0xx_HAL_Driver/Src \
 Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src \
 Middlewares/ST/STM32_USB_Device_Library/Core/Src \
+ST7789 \
+TFT_Library/LCD \
+TFT_Library/UGUI/Fonts \
+TFT_Library/UGUI \
 USB_DEVICE/App \
 USB_DEVICE/Target \
 decadriver/src \

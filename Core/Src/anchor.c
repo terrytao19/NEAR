@@ -1,12 +1,180 @@
 #include "anchor.h"
-#include "lcd.h"
 
 #ifdef FLASH_ANCHOR
 
 #include "id.h"
+#include "lcd.h"
 
 /* Example application name and version to display on LCD screen. */
 #define APP_NAME "DS TWR RESP v1.2"
+
+#define SCREEN_SLEEP_TIMEOUT 10000
+#define TAG_ACTIVITY_TIMEOUT 10000
+
+#define SLIDING_WINDOW_VARIANCE_RHO 0.15
+#define SLIDING_WINDOW_VARIANCE_RHO_INV (1 - SLIDING_WINDOW_VARIANCE_RHO)
+
+extern ADC_HandleTypeDef hadc;
+
+uint32_t btn_press_tick = 0;
+
+bool last_lcd_on = false;
+bool last_btn = false;
+bool disp_on = false;
+
+uint8_t current_screen;
+uint8_t total_screens;
+
+uint32_t last_disp_tag_tick = 0;
+  
+void display_info()
+{
+    UG_FillFrame(146, 20, 210, 56, C_BLACK);
+    uint16_t raw_volt_adc;
+    char volt_msg[10];
+    float battery_percentage;
+
+    HAL_ADC_Start(&hadc);
+    HAL_ADC_PollForConversion(&hadc, HAL_MAX_DELAY);
+    raw_volt_adc = HAL_ADC_GetValue(&hadc);
+
+    // Convert ADC value to battery percentage (example calculation)
+    battery_percentage = ((float)raw_volt_adc / 2730.0f) * 100.0f;
+
+    // Format the battery percentage into a string
+    sprintf(volt_msg, "BATT: %.0f%%", battery_percentage);
+
+    // Display the battery percentage on the LCD
+    LCD_PutStr(50, 20, volt_msg, FONT_16X26, C_WHITE, C_BLACK);
+
+    // Print the anchor ID (1-indexed)
+    char anchor_id_msg[20];
+    sprintf(anchor_id_msg, "ANCHOR ID: %d", ANCHOR_IDX + 1);
+    LCD_PutStr(50, 70, anchor_id_msg, FONT_16X26, C_WHITE, C_BLACK);
+
+    // Count the number of active tags
+    uint8_t active_tags = 0;
+    for (uint8_t i = 0; i < total_tags; i++) {
+        if (tags_last_heard[i] != 0 && HAL_GetTick() - tags_last_heard[i] <= TAG_ACTIVITY_TIMEOUT) {
+            active_tags++;
+        }
+    }
+
+    UG_FillFrame(256, 120, 288, 146, C_BLACK);
+
+    // Print the number of active tags
+    char active_tags_msg[20];
+    sprintf(active_tags_msg, "ACTIVE TAGS: %d", active_tags);
+    LCD_PutStr(50, 120, active_tags_msg, FONT_16X26, C_WHITE, C_BLACK);
+
+}
+
+void display_tag(uint8_t tag_id)
+{
+
+    if (HAL_GetTick() - last_disp_tag_tick >= 100)
+    {
+        if (HAL_GetTick() - tags_last_heard[tag_id - 1] > TAG_ACTIVITY_TIMEOUT) {
+            UG_FillFrame(152, 50, 300, 92, C_BLACK);
+            char inactive_msg[20];
+            sprintf(inactive_msg, "TAG %d: INACTIVE", tag_id);
+            LCD_PutStr(50, 50, inactive_msg, FONT_16X26, C_WHITE, C_BLACK);
+            last_disp_tag_tick = HAL_GetTick();
+            return;
+        }
+        UG_FillFrame(152, 50, 300, 92, C_BLACK);
+        char tag_msg[20];
+        sprintf(tag_msg, "TAG %d: %.3f m", tag_id, tag_distances[tag_id - 1]);
+        LCD_PutStr(50, 50, tag_msg, FONT_16X26, C_WHITE, C_BLACK);
+
+        // Calculate the standard deviation (square root of variance)
+        double tag_stdev = sqrt(tags_variance[tag_id - 1]);
+
+        // Print the standard deviation of the tag
+        UG_FillFrame(152, 100, 300, 142, C_BLACK);
+        char stdev_msg[20];
+        sprintf(stdev_msg, "STDEV: %.3f m", tag_stdev);
+        LCD_PutStr(50, 100, stdev_msg, FONT_16X26, C_WHITE, C_BLACK);
+
+        last_disp_tag_tick = HAL_GetTick();
+    }
+
+}
+
+void display_clear()
+{
+    UG_FillScreen(C_BLACK);
+}
+
+void handle_screens()
+{
+    if(current_screen == 0)
+    {
+        display_info();
+        return;
+    }
+    display_tag(current_screen);
+}
+
+void lcd_off()
+{
+    HAL_GPIO_WritePin(SCREEN_EN_GPIO_Port, SCREEN_EN_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(SCREEN_EN_AUX_GPIO_Port, SCREEN_EN_AUX_Pin, GPIO_PIN_RESET);
+}
+
+void lcd_on()
+{
+    HAL_GPIO_WritePin(SCREEN_EN_GPIO_Port, SCREEN_EN_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(SCREEN_EN_AUX_GPIO_Port, SCREEN_EN_AUX_Pin, GPIO_PIN_SET);
+    
+    LCD_init();
+}
+
+// Returns true when lcd should be on 
+bool handle_btn()
+{
+    if(HAL_GPIO_ReadPin(BTN_DISP_GPIO_Port, BTN_DISP_Pin))
+    {
+        btn_press_tick = HAL_GetTick();
+
+        // Rising edge btn
+        if(!last_btn && disp_on)
+        {
+            current_screen = (current_screen + 1) % total_screens;
+            display_clear();
+        }
+
+        last_btn = true;
+    }
+    else
+    {
+        last_btn = false;
+    }
+
+    disp_on = HAL_GetTick() - btn_press_tick < SCREEN_SLEEP_TIMEOUT;
+
+    if(disp_on)
+    {
+        // Rising edge lcd
+        if(!last_lcd_on)
+        {
+            lcd_on();
+            display_clear();
+        }
+
+        last_lcd_on = true;
+        return true;
+    }
+
+    // Falling edge
+    if(last_lcd_on)
+    {
+        lcd_off();
+    }
+
+    last_lcd_on = false;
+    return false;
+}
 
 /* Default communication configuration. We use here EVK1000's default mode (mode 3). */
 static dwt_config_t config = {
@@ -96,7 +264,7 @@ static double tof;
 static double distance;
 
 /* String used to display measured distance on LCD screen (16 characters maximum). */
-char dist_str[26] = {0};
+char dist_str[128] = {0};
 
 /* Declaration of static functions. */
 static uint64 get_tx_timestamp_u64(void);
@@ -109,11 +277,12 @@ static void final_msg_get_ts(const uint8 *ts_field, uint32 *ts);
  * @brief Application entry point.
  *
  * @param  none
- *
+
  * @return none
  */
-int anchor_main(void)
+int anchor_main(void (*send_at_msg_ptr)(char *))
 {
+    total_screens = total_tags + 1;
 
     memcpy((rx_poll_msg) + RX_POLL_MSG_ANCHOR_ID_IDX, anchor_id, 2);
     memcpy((tx_resp_msg) + TX_RESP_MSG_ANCHOR_ID_IDX, anchor_id, 2);
@@ -150,18 +319,17 @@ int anchor_main(void)
     /* Set preamble timeout for expected frames. See NOTE 6 below. */
     // dwt_setpreambledetecttimeout(PRE_TIMEOUT);
 
+    HAL_Delay(2000);
+    (*send_at_msg_ptr)("AT+MODE=TEST\r\n");
+    HAL_Delay(100);
+    (*send_at_msg_ptr)("AT+TEST=RFCFG,915,SF8,500,12,15,14,ON,OFF,OFF\r\n");
+
     /* Loop forever responding to ranging requests. */
     while (1)
     {
+
         /* Clear reception timeout to start next ranging process. */
         dwt_setrxtimeout(0);
-
-        //         int i;
-        //
-        //         for (i = 0 ; i < RX_BUF_LEN; i++ )
-        //         {
-        //             rx_buffer[i] = 0;
-        //         }
 
         /* Activate reception immediately. */
         dwt_rxenable(DWT_START_RX_IMMEDIATE);
@@ -170,6 +338,12 @@ int anchor_main(void)
         while (!((status_reg = dwt_read32bitreg(SYS_STATUS_ID)) & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR)))
         // while (!((status_reg = dwt_read32bitreg(SYS_STATUS_ID)) & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_ERR)))
         {
+
+            if(handle_btn())
+            {
+                handle_screens();
+            }
+
         };
 
         //  uint32 error = status_reg & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR);
@@ -295,16 +469,31 @@ int anchor_main(void)
                         tof_dtu = (int64)((Ra * Rb - Da * Db) / (Ra + Rb + Da + Db));
 
                         tof = tof_dtu * DWT_TIME_UNITS;
+
                         distance = tof * SPEED_OF_LIGHT;
 
-                        dist_str[24] = '\r';
-                        dist_str[25] = '\n';
+                        if(distance < 0)
+                        {
+                            continue;
+                        }
+
+                        uint8 tag_index = rx_final_msg[RX_FINAL_MSG_TAG_ID_IDX + 1] - '0' - 1; // Convert char to uint8
+                        if (tag_index < total_tags) // Ensure tag ID is within bounds
+                        {
+                            tags_last_heard[tag_index] = HAL_GetTick();
+                            tag_distances[tag_index] = distance; // Update the distance for the tag
+
+                            // Update tag mean and variance
+                            tags_variance[tag_index] = (SLIDING_WINDOW_VARIANCE_RHO_INV * tags_variance[tag_index]) + (SLIDING_WINDOW_VARIANCE_RHO * (distance - tags_mean[tag_index]) * (distance - tags_mean[tag_index]));
+                            tags_mean[tag_index] = (SLIDING_WINDOW_VARIANCE_RHO_INV * tags_mean[tag_index]) + (SLIDING_WINDOW_VARIANCE_RHO * distance);
+                        }
 
                         /* Display computed distance on LCD. */
-                        sprintf(dist_str, "TAG: %c, DIST: %3.2f m", rx_final_msg[RX_FINAL_MSG_TAG_ID_IDX + 1], distance);
+                        sprintf(dist_str, "AT+TEST=TXLRSTR, \"%c,%c,%3.2f\"\r\n", anchor_id[1], rx_final_msg[RX_FINAL_MSG_TAG_ID_IDX + 1], distance);
                         // lcd_display_str(dist_str);
 
                         CDC_Transmit_FS((uint8_t *)dist_str, sizeof(dist_str));
+                        // (*send_at_msg_ptr)(dist_str);
                     }
                 }
                 else

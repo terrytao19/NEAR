@@ -1,20 +1,20 @@
 /* USER CODE BEGIN Header */
 /**
-  **************w***************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2025 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ **************w***************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2025 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -22,6 +22,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+
+#include "lcd.h"
 
 /* USER CODE END Includes */
 
@@ -45,6 +47,7 @@ ADC_HandleTypeDef hadc;
 
 SPI_HandleTypeDef hspi1;
 SPI_HandleTypeDef hspi2;
+DMA_HandleTypeDef hdma_spi2_tx;
 
 TIM_HandleTypeDef htim3;
 
@@ -66,6 +69,33 @@ static void MX_SPI2_Init(void);
 static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
 
+void send_at_msg(char *msg)
+{
+  HAL_UART_Transmit_IT(&huart1, (uint8_t *)msg, strlen(msg));
+}
+
+void (*send_at_msg_ptr)(char *msg);
+
+void node_recv(uint32_t timeout_ms)
+{
+  send_at_msg("AT+TEST=RXLRPKT\r\n");
+  HAL_Delay(timeout_ms);
+}
+
+void node_send()
+{
+  uint16_t count = 0;
+  char data[32];
+  char cmd[128];
+
+  memset(data, 0, sizeof(data));
+  sprintf(data, "%04X", count);
+  sprintf(cmd, "AT+TEST=TXLRPKT,\"5345454544%s\"\r\n", data);
+
+  send_at_msg(cmd);
+  HAL_Delay(100);
+}
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -80,28 +110,6 @@ char joined_msg[] = "+JOIN: Network joined";
 
 /* USER CODE END 0 */
 
-void send_at_msg(char* msg) {
-	  HAL_UART_Transmit_IT(&huart1, (uint8_t*) msg, strlen(msg));
-}
-
-void node_recv(uint32_t timeout_ms) {
-	send_at_msg("AT+TEST=RXLRPKT\r\n");
-	HAL_Delay(timeout_ms);
-}
-
-void node_send() {
-	uint16_t count = 0;
-	char data[32];
-	char cmd[128];
-
-	memset(data, 0, sizeof(data));
-	sprintf(data, "%04X", count);
-	sprintf(cmd, "AT+TEST=TXLRPKT,\"5345454544%s\"\r\n", data);
-
-	send_at_msg(cmd);
-	HAL_Delay(100);
-}
-
 /**
   * @brief  The application entry point.
   * @retval int
@@ -110,6 +118,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+  send_at_msg_ptr = &send_at_msg;
 
   /* USER CODE END 1 */
 
@@ -140,6 +149,12 @@ int main(void)
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
+  // Power to screen
+  HAL_GPIO_WritePin(SCREEN_EN_GPIO_Port, SCREEN_EN_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(SCREEN_EN_AUX_GPIO_Port, SCREEN_EN_AUX_Pin, GPIO_PIN_SET);
+
+  LCD_init();
+
   // Startup sequence for LoRa module
   HAL_GPIO_WritePin(E5_NRST_GPIO_Port, E5_NRST_Pin, GPIO_PIN_SET);
   HAL_Delay(2000);
@@ -151,127 +166,129 @@ int main(void)
   // LoRa command reception callback
   HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uart_rx_buf, UART_RX_BUF_SIZE);
 
-//  char tx_msg4[] = "AT+DR=US915\r\n";
-//  HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg4, sizeof(tx_msg4));
-//  HAL_Delay(100);
-//
-//  char tx_msg5[] = "AT+CH\r\n";
-//  HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg5, sizeof(tx_msg5));
-//  HAL_Delay(100);
-//
-//  for(int i = 0; i < 72; i++)
-//  {
-//    if(i < 8 || i > 72)
-//    {
-//      char tx_msg5_[14];
-//      sprintf(tx_msg5_, "AT+CH=%d, OFF", i);
-//      HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg5_, sizeof(tx_msg5_));
-//    }
-//    HAL_Delay(50);
-//  }
-//
-//  char tx_msg0[] = "AT+KEY=APPKEY,\"B8AC2B18AE0F96A0FF83A63E33D0BA15\"\r\n";
-//  HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg0, sizeof(tx_msg0));
-//  HAL_Delay(500);
-//
-//  char tx_msg3[] = "AT+MODE= LWOTAA\r\n";
-//  HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg3, sizeof(tx_msg3));
-//  HAL_Delay(100);
+  // Startup lcd text
 
-//  while(!joined)
-//  {
-//    char tx_msg_[] = "AT+ID=DevEui\r\n";
-//    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_, sizeof(tx_msg_));
-//    HAL_Delay(1000);
-//
-//    char tx_msg2[] = "AT+ID=AppEui\r\n";
-//    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg2, sizeof(tx_msg2));
-//    HAL_Delay(1000);
-//
-//    char tx_msg_class[] = "AT+CLASS=C\r\n";
-//    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_class, sizeof(tx_msg_class));
-//    HAL_Delay(1000);
+  UG_FontSetTransparency(1);
+  UG_FillScreen(C_BLACK);
 
-    // char tx_msg_mc[] = "AT+LW=MC,OFF\r\n";
-    // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_class, sizeof(tx_msg_class));
-    // HAL_Delay(1000);
+  LCD_PutStr(50, 20, "NEAR ANCHOR", FONT_16X26, C_WHITE, C_BLACK);
+  LCD_PutStr(50, 50, "DESIGNED BY:", FONT_16X26, C_WHITE, C_BLACK);
+  LCD_PutStr(50, 80, "TERRY TAO", FONT_16X26, C_WHITE, C_BLACK);
+  LCD_PutStr(50, 110, "THOR HELGESON", FONT_16X26, C_WHITE, C_BLACK);
 
-//    char tx_msg_durmx[] = "AT+LW=DUMRX,ON\r\n";
-//    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_durmx, sizeof(tx_msg_durmx));
-//    HAL_Delay(1000);
-//
-//    char tx_msg_dcmrx[] = "AT+LW=DCMRX,ON\r\n";
-//    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_dcmrx, sizeof(tx_msg_dcmrx));
-//    HAL_Delay(1000);
-//
-//    char tx_msg_dr[] = "AT+LW=CDR\r\n";
-//	HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_dr, sizeof(tx_msg_dr));
-//	HAL_Delay(1000);
-//
-//	char tx_msg_adr[] = "AT+ADR=?\r\n";
-//	HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_adr, sizeof(tx_msg_adr));
-//	HAL_Delay(1000);
-//
-//    char tx_msg8[] = "AT+JOIN\r\n";
-//    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg8, sizeof(tx_msg8));
-//
-//    CDC_Transmit_FS("JOIN ATTEMPT\r\n", 14);
-//
-//    HAL_Delay(2000);
-//
-//  }
+  //  char tx_msg4[] = "AT+DR=US915\r\n";
+  //  HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg4, sizeof(tx_msg4));
+  //  HAL_Delay(100);
+  //
+  //  char tx_msg5[] = "AT+CH\r\n";
+  //  HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg5, sizeof(tx_msg5));
+  //  HAL_Delay(100);
+  //
+  //  for(int i = 0; i < 72; i++)
+  //  {
+  //    if(i < 8 || i > 72)
+  //    {
+  //      char tx_msg5_[14];
+  //      sprintf(tx_msg5_, "AT+CH=%d, OFF", i);
+  //      HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg5_, sizeof(tx_msg5_));
+  //    }
+  //    HAL_Delay(50);
+  //  }
+  //
+  //  char tx_msg0[] = "AT+KEY=APPKEY,\"B8AC2B18AE0F96A0FF83A63E33D0BA15\"\r\n";
+  //  HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg0, sizeof(tx_msg0));
+  //  HAL_Delay(500);
+  //
+  //  char tx_msg3[] = "AT+MODE= LWOTAA\r\n";
+  //  HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg3, sizeof(tx_msg3));
+  //  HAL_Delay(100);
 
-//  CDC_Transmit_FS("JOIN SUCCESS\r\n", 14);
+  //  while(!joined)
+  //  {
+  //    char tx_msg_[] = "AT+ID=DevEui\r\n";
+  //    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_, sizeof(tx_msg_));
+  //    HAL_Delay(1000);
+  //
+  //    char tx_msg2[] = "AT+ID=AppEui\r\n";
+  //    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg2, sizeof(tx_msg2));
+  //    HAL_Delay(1000);
+  //
+  //    char tx_msg_class[] = "AT+CLASS=C\r\n";
+  //    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_class, sizeof(tx_msg_class));
+  //    HAL_Delay(1000);
 
-  #ifdef FLASH_TAG
-    tag_main();
-  #endif
+  // char tx_msg_mc[] = "AT+LW=MC,OFF\r\n";
+  // HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_class, sizeof(tx_msg_class));
+  // HAL_Delay(1000);
 
-  #ifdef FLASH_ANCHOR
-    anchor_main();
-  #endif
+  //    char tx_msg_durmx[] = "AT+LW=DUMRX,ON\r\n";
+  //    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_durmx, sizeof(tx_msg_durmx));
+  //    HAL_Delay(1000);
+  //
+  //    char tx_msg_dcmrx[] = "AT+LW=DCMRX,ON\r\n";
+  //    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_dcmrx, sizeof(tx_msg_dcmrx));
+  //    HAL_Delay(1000);
+  //
+  //    char tx_msg_dr[] = "AT+LW=CDR\r\n";
+  //	HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_dr, sizeof(tx_msg_dr));
+  //	HAL_Delay(1000);
+  //
+  //	char tx_msg_adr[] = "AT+ADR=?\r\n";
+  //	HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg_adr, sizeof(tx_msg_adr));
+  //	HAL_Delay(1000);
+  //
+  //    char tx_msg8[] = "AT+JOIN\r\n";
+  //    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg8, sizeof(tx_msg8));
+  //
+  //    CDC_Transmit_FS("JOIN ATTEMPT\r\n", 14);
+  //
+  //    HAL_Delay(2000);
+  //
+  //  }
 
-  #ifdef EX_02A_DEF
-    dw_main();
-  #endif
+  //  CDC_Transmit_FS("JOIN SUCCESS\r\n", 14);
+
+#ifdef FLASH_TAG
+  tag_main();
+#endif
+
+#ifdef FLASH_ANCHOR
+  anchor_main(send_at_msg_ptr);
+#endif
+
+#ifdef EX_02A_DEF
+  dw_main();
+#endif
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-//  HAL_Delay(2000);
-//  send_at_msg("AT+MODE=TEST\r\n");
-//  HAL_Delay(100);
-//  send_at_msg("AT+TEST=RFCFG,915,SF8,500,12,15,14,ON,OFF,OFF\r\n");
-//  HAL_Delay(100);
-//  send_at_msg("AT+TEST=RXLRPKT\r\n");
-
   while (1)
   {
-//	  send_at_msg("AT+TEST=TXLRSTR, \"Hello Cruel World\"\r\n");
-//	  HAL_Delay(100);
+    //	  send_at_msg("AT+TEST=TXLRSTR, \"Hello Cruel World\"\r\n");
+    //	  HAL_Delay(100);
 
-//	  send_at_msg("AT+MODE=TEST\r\n");
-//	  HAL_Delay(100);
+    //	  send_at_msg("AT+MODE=TEST\r\n");
+    //	  HAL_Delay(100);
 
-//	  node_recv(2000);
-//	  node_send();
+    //	  node_recv(2000);
+    //	  node_send();
 
-//	   char tx_msg8[] = "AT\r\n";
-//	   HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg8, sizeof(tx_msg8));
+    //	   char tx_msg8[] = "AT\r\n";
+    //	   HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg8, sizeof(tx_msg8));
 
-//     char tx_msg8[] = "AT+JOIN\r\n";
-//     HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg8, sizeof(tx_msg8));
-//     HAL_Delay(3000);
-    
-//    char tx_msg[] = "AT+MSG=\"Adi<3robot\"\r\n";
-//    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg, sizeof(tx_msg));
-//    HAL_Delay(500);
+    //     char tx_msg8[] = "AT+JOIN\r\n";
+    //     HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg8, sizeof(tx_msg8));
+    //     HAL_Delay(3000);
 
-//	  send_at_msg("AT+MODE=TEST\r\n");
-//	  send_at_msg("AT+TEST=RFCFG,866,SF12,125,12,15,14,ON,OFF,OFF\r\n");
+    //    char tx_msg[] = "AT+MSG=\"Adi<3robot\"\r\n";
+    //    HAL_UART_Transmit_IT(&huart1, (uint8_t*) &tx_msg, sizeof(tx_msg));
+    //    HAL_Delay(500);
 
+    //	  send_at_msg("AT+MODE=TEST\r\n");
+    //	  send_at_msg("AT+TEST=RFCFG,866,SF12,125,12,15,14,ON,OFF,OFF\r\n");
 
     /* USER CODE END WHILE */
 
@@ -356,7 +373,7 @@ static void MX_ADC_Init(void)
   hadc.Init.Resolution = ADC_RESOLUTION_12B;
   hadc.Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc.Init.ScanConvMode = ADC_SCAN_DIRECTION_FORWARD;
-  hadc.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  hadc.Init.EOCSelection = ADC_EOC_SEQ_CONV;
   hadc.Init.LowPowerAutoWait = DISABLE;
   hadc.Init.LowPowerAutoPowerOff = DISABLE;
   hadc.Init.ContinuousConvMode = DISABLE;
@@ -444,10 +461,10 @@ static void MX_SPI2_Init(void)
   hspi2.Instance = SPI2;
   hspi2.Init.Mode = SPI_MODE_MASTER;
   hspi2.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi2.Init.DataSize = SPI_DATASIZE_4BIT;
+  hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
   hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
-  hspi2.Init.NSS = SPI_NSS_HARD_OUTPUT;
+  hspi2.Init.NSS = SPI_NSS_SOFT;
   hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
   hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
@@ -559,6 +576,9 @@ static void MX_DMA_Init(void)
   /* DMA1_Channel2_3_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Channel2_3_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel2_3_IRQn);
+  /* DMA1_Channel4_5_6_7_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel4_5_6_7_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel4_5_6_7_IRQn);
 
 }
 
@@ -582,8 +602,10 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOA, E5_NRST_Pin|DW_NSS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, SCREEN_EN_Pin|SD_CS_Pin|WAKE_Pin|TFT_DC_Pin
-                          |TFT_RST_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, SCREEN_EN_AUX_Pin|SCREEN_EN_Pin|SD_CS_Pin|WAKE_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, TFT_CS_Pin|TFT_DC_Pin|TFT_RST_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : E5_NRST_Pin */
   GPIO_InitStruct.Pin = E5_NRST_Pin;
@@ -605,19 +627,31 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(DW_NSS_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : SCREEN_EN_Pin SD_CS_Pin WAKE_Pin TFT_DC_Pin
-                           TFT_RST_Pin */
-  GPIO_InitStruct.Pin = SCREEN_EN_Pin|SD_CS_Pin|WAKE_Pin|TFT_DC_Pin
-                          |TFT_RST_Pin;
+  /*Configure GPIO pins : SCREEN_EN_AUX_Pin SCREEN_EN_Pin WAKE_Pin */
+  GPIO_InitStruct.Pin = SCREEN_EN_AUX_Pin|SCREEN_EN_Pin|WAKE_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+  /*Configure GPIO pins : SD_CS_Pin TFT_DC_Pin */
+  GPIO_InitStruct.Pin = SD_CS_Pin|TFT_DC_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : TFT_CS_Pin TFT_RST_Pin */
+  GPIO_InitStruct.Pin = TFT_CS_Pin|TFT_RST_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
   /*Configure GPIO pin : BTN_DISP_Pin */
   GPIO_InitStruct.Pin = BTN_DISP_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(BTN_DISP_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : DW_IRQn_Pin */
@@ -642,27 +676,28 @@ static void MX_GPIO_Init(void)
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t offset)
 {
 
-	static uint16_t last_offset = 0;
+  static uint16_t last_offset = 0;
 
-	// Ignore if called twice (which will happen on every half buffer)
-	if (offset != last_offset) {
+  // Ignore if called twice (which will happen on every half buffer)
+  if (offset != last_offset)
+  {
 
-		// If wrap around reset last_size
-		if (offset < last_offset)
-			last_offset = 0;
+    // If wrap around reset last_size
+    if (offset < last_offset)
+      last_offset = 0;
 
     CDC_Transmit_FS(uart_rx_buf + last_offset, offset - last_offset);
-    
+
     static uint16_t response_offset = 0;
-    
-    for(uint16_t i = last_offset; i < offset; i++)
+
+    for (uint16_t i = last_offset; i < offset; i++)
     {
-      if(uart_rx_buf[i] == '+')
+      if (uart_rx_buf[i] == '+')
       {
         response_offset = i;
         if (offset < response_offset)
           response_offset = 0;
-        if(memcmp(uart_rx_buf + response_offset, joined_msg, sizeof(joined_msg) - 1) == 0)
+        if (memcmp(uart_rx_buf + response_offset, joined_msg, sizeof(joined_msg) - 1) == 0)
         {
           joined = 1;
           break;
@@ -671,10 +706,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t offset)
     }
 
     last_offset = offset;
-
-
-	}
-
+  }
 }
 
 /* USER CODE END 4 */

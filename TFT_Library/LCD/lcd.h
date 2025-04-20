@@ -5,8 +5,11 @@
 #include "ugui.h"
 #include "main.h"
 
+/* For demo only. Minimum is 32, 128 and higher will enable all tests */
+#define DEMO_FLASH_KB 32
+
 /* choose a Hardware SPI port to use. */
-#define LCD_HANDLE            hspi1
+#define LCD_HANDLE            hspi2
 
 /* Pin connections. Use same names as in CubeMX */
 #define LCD_DC                TFT_DC
@@ -29,7 +32,8 @@
 #elif defined USE_ST7789              /* ST7789 LCD sizes */
 //#define LCD_135X240
 //#define LCD_240X240
-  #define LCD_240X280
+// #define LCD_240X280
+  #define LCD_172X320
 #endif
 
 
@@ -111,6 +115,18 @@
     #elif (LCD_ROTATION == 1) || (LCD_ROTATION == 3)
       #define LCD_WIDTH  280
       #define LCD_HEIGHT 240
+    #endif
+  #elif defined LCD_172X320
+    #if (LCD_ROTATION == 0) || (LCD_ROTATION == 2)
+      #define LCD_WIDTH  320
+      #define LCD_HEIGHT 172
+      #define LCD_X_SHIFT 0
+      #define LCD_Y_SHIFT 0
+    #elif (LCD_ROTATION == 1) || (LCD_ROTATION == 3)
+      #define LCD_WIDTH  320
+      #define LCD_HEIGHT 172
+      #define LCD_X_SHIFT 0
+      #define LCD_Y_SHIFT 30
     #endif
   #endif
 

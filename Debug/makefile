@@ -13,6 +13,10 @@ RM := rm -rf
 -include decadriver/src/subdir.mk
 -include USB_DEVICE/Target/subdir.mk
 -include USB_DEVICE/App/subdir.mk
+-include TFT_Library/UGUI/Fonts/subdir.mk
+-include TFT_Library/UGUI/subdir.mk
+-include TFT_Library/LCD/subdir.mk
+-include ST7789/subdir.mk
 -include Middlewares/ST/STM32_USB_Device_Library/Core/Src/subdir.mk
 -include Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/subdir.mk
 -include Drivers/STM32F0xx_HAL_Driver/Src/subdir.mk
