@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ../Core/Inc/id.h:27:11:get_anchor_id	1
 ../Core/Src/anchor.c:30:6:display_info	4
 ../Core/Src/anchor.c:72:6:display_tag	3
@@ -10,3 +11,5 @@
 ../Core/Src/anchor.c:529:15:get_tx_timestamp_u64	2
 ../Core/Src/anchor.c:553:15:get_rx_timestamp_u64	2
 ../Core/Src/anchor.c:578:13:final_msg_get_ts	2
+=======
+>>>>>>> 461931204b2ba57ac08ef8a8c2b8de16394963d4

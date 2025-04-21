@@ -491,8 +491,10 @@ int anchor_main(void (*send_at_msg_ptr)(char *))
                         /* Display computed distance on LCD. */
                         sprintf(dist_str, "AT+TEST=TXLRSTR, \"%c,%c,%3.2f\"\r\n", anchor_id[1], rx_final_msg[RX_FINAL_MSG_TAG_ID_IDX + 1], distance);
 
-                        // CDC_Transmit_FS((uint8_t *)dist_str, sizeof(dist_str));
+                        CDC_Transmit_FS((uint8_t *)dist_str, sizeof(dist_str));
                         (*send_at_msg_ptr)(dist_str);
+
+                        Sleep(55);
                     }
                 }
                 else
