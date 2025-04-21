@@ -35,8 +35,8 @@ ST7789/st7789.o: ../ST7789/st7789.c ../ST7789/st7789.h ../ST7789/fonts.h \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_tim_ex.h \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart.h \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart_ex.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/platform/inc/port.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/compiler/inc/compiler.h
+ C:/Users/twhel/Documents/Rob450/nearfield/NEAR/platform/inc/port.h \
+ C:/Users/twhel/Documents/Rob450/nearfield/NEAR/compiler/inc/compiler.h
 ../ST7789/st7789.h:
 ../ST7789/fonts.h:
 ../Core/Inc/main.h:
@@ -76,5 +76,5 @@ ST7789/st7789.o: ../ST7789/st7789.c ../ST7789/st7789.h ../ST7789/fonts.h \
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_tim_ex.h:
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart.h:
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_uart_ex.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/platform/inc/port.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/compiler/inc/compiler.h:
+C:/Users/twhel/Documents/Rob450/nearfield/NEAR/platform/inc/port.h:
+C:/Users/twhel/Documents/Rob450/nearfield/NEAR/compiler/inc/compiler.h:

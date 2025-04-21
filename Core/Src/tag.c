@@ -8,7 +8,7 @@
 #define APP_NAME "DS TWR INIT v1.2"
 
 /* Inter-ranging delay period, in milliseconds. */
-#define RNG_DELAY_MS 0
+#define RNG_DELAY_MS 10
 
 /* Default communication configuration. We use here EVK1000's default mode (mode 3). */
 static dwt_config_t config = {
@@ -49,6 +49,7 @@ static uint8 tx_final_msg[] = {0x41, 0x88, 0, 0xCA, 0xDE, 0, 0, 0, 0, 0x23, 0, 0
 #define TX_FINAL_MSG_ANCHOR_ID_IDX 5
 
 uint8 current_anchor = 0; // the guy im talking to
+uint8 attempt = 0;
 
 /* Length of the common part of the message (up to and including the function code, see NOTE 2 below). */
 #define ALL_MSG_COMMON_LEN 10
@@ -152,25 +153,16 @@ int tag_main(void)
     /* Loop forever initiating ranging exchanges. */
     while (1)
     {
-
-        dwt_rxenable(DWT_START_RX_IMMEDIATE);
         
-        /* We should listen to the airwaves before transmitting the first poll to not interfere with other tags */
-        while (!((status_reg = dwt_read32bitreg(SYS_STATUS_ID)) & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR)))
-        {
-        };
-
-        if (status_reg & SYS_STATUS_RXFCG)
-        {
-            HAL_Delay(10);
-            continue;
-        }
-                
         memcpy(tx_poll_msg + TX_POLL_MSG_ANCHOR_ID_IDX, get_anchor_id(current_anchor), 2);
         memcpy(rx_resp_msg + RX_RESP_MSG_ANCHOR_ID_IDX, get_anchor_id(current_anchor), 2);
         memcpy(tx_final_msg + TX_FINAL_MSG_ANCHOR_ID_IDX, get_anchor_id(current_anchor), 2);
 
-        current_anchor = (current_anchor + 1) % total_anchors;
+        attempt++;
+        if (attempt == 5) {
+        	attempt = 0;
+        	current_anchor = (current_anchor + 1) % total_anchors;
+        }
 
         /* Don't send if another interaction is happening */
         dwt_rxenable(DWT_START_RX_IMMEDIATE);
@@ -179,7 +171,7 @@ int tag_main(void)
 
         if (status_reg & SYS_STATUS_RXFCG)
         {
-        	Sleep(50);
+        	Sleep(200);
         	continue;
         }
         else
@@ -268,6 +260,8 @@ int tag_main(void)
 
                     /* Increment frame sequence number after transmission of the final message (modulo 256). */
                     frame_seq_nb++;
+
+                    current_anchor = (current_anchor + 1) % total_anchors;
                 }
             }
         }

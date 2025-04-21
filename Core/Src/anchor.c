@@ -493,7 +493,9 @@ int anchor_main(void (*send_at_msg_ptr)(char *))
                         // lcd_display_str(dist_str);
 
                         CDC_Transmit_FS((uint8_t *)dist_str, sizeof(dist_str));
-                        // (*send_at_msg_ptr)(dist_str);
+                        (*send_at_msg_ptr)(dist_str);
+
+                        Sleep(55);
                     }
                 }
                 else

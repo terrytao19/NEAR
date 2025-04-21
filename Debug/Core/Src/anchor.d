@@ -1,11 +1,11 @@
 Core/Src/anchor.o: ../Core/Src/anchor.c ../Core/Inc/anchor.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/decadriver/inc/deca_device_api.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/decadriver/inc/deca_regs.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/decadriver/inc/deca_version.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/platform/inc/deca_spi.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/decadriver/inc/deca_types.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/platform/inc/port.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/compiler/inc/compiler.h \
+ C:/Users/twhel/Documents/Rob450/nearfield/NEAR/decadriver/inc/deca_device_api.h \
+ C:/Users/twhel/Documents/Rob450/nearfield/NEAR/decadriver/inc/deca_regs.h \
+ C:/Users/twhel/Documents/Rob450/nearfield/NEAR/decadriver/inc/deca_version.h \
+ C:/Users/twhel/Documents/Rob450/nearfield/NEAR/platform/inc/deca_spi.h \
+ C:/Users/twhel/Documents/Rob450/nearfield/NEAR/decadriver/inc/deca_types.h \
+ C:/Users/twhel/Documents/Rob450/nearfield/NEAR/platform/inc/port.h \
+ C:/Users/twhel/Documents/Rob450/nearfield/NEAR/compiler/inc/compiler.h \
  ../Core/Inc/main.h ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal.h \
  ../Core/Inc/stm32f0xx_hal_conf.h \
  ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_rcc.h \
@@ -49,29 +49,15 @@ Core/Src/anchor.o: ../Core/Src/anchor.c ../Core/Inc/anchor.h \
  ../USB_DEVICE/Target/usbd_conf.h \
  ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h \
  ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h \
- ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h \
- ../Core/Inc/id.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/TFT_Library/LCD/lcd.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/TFT_Library/LCD/images.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/TFT_Library/UGUI/ugui.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/TFT_Library/UGUI/ugui_config.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/TFT_Library/UGUI/ugui_colors.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/TFT_Library/UGUI/ugui_theme.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/TFT_Library/UGUI/ugui_button.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/TFT_Library/UGUI/ugui.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/TFT_Library/UGUI/ugui_checkbox.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/TFT_Library/UGUI/ugui_fonts.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/TFT_Library/UGUI/ugui_image.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/TFT_Library/UGUI/ugui_progress.h \
- C:/Users/terry/MICHIGAN/ROB_450/NEAR/TFT_Library/UGUI/ugui_textbox.h
+ ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h
 ../Core/Inc/anchor.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/decadriver/inc/deca_device_api.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/decadriver/inc/deca_regs.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/decadriver/inc/deca_version.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/platform/inc/deca_spi.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/decadriver/inc/deca_types.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/platform/inc/port.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/compiler/inc/compiler.h:
+C:/Users/twhel/Documents/Rob450/nearfield/NEAR/decadriver/inc/deca_device_api.h:
+C:/Users/twhel/Documents/Rob450/nearfield/NEAR/decadriver/inc/deca_regs.h:
+C:/Users/twhel/Documents/Rob450/nearfield/NEAR/decadriver/inc/deca_version.h:
+C:/Users/twhel/Documents/Rob450/nearfield/NEAR/platform/inc/deca_spi.h:
+C:/Users/twhel/Documents/Rob450/nearfield/NEAR/decadriver/inc/deca_types.h:
+C:/Users/twhel/Documents/Rob450/nearfield/NEAR/platform/inc/port.h:
+C:/Users/twhel/Documents/Rob450/nearfield/NEAR/compiler/inc/compiler.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal.h:
 ../Core/Inc/stm32f0xx_hal_conf.h:
@@ -117,17 +103,3 @@ C:/Users/terry/MICHIGAN/ROB_450/NEAR/compiler/inc/compiler.h:
 ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h:
 ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h:
 ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h:
-../Core/Inc/id.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/TFT_Library/LCD/lcd.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/TFT_Library/LCD/images.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/TFT_Library/UGUI/ugui.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/TFT_Library/UGUI/ugui_config.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/TFT_Library/UGUI/ugui_colors.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/TFT_Library/UGUI/ugui_theme.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/TFT_Library/UGUI/ugui_button.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/TFT_Library/UGUI/ugui.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/TFT_Library/UGUI/ugui_checkbox.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/TFT_Library/UGUI/ugui_fonts.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/TFT_Library/UGUI/ugui_image.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/TFT_Library/UGUI/ugui_progress.h:
-C:/Users/terry/MICHIGAN/ROB_450/NEAR/TFT_Library/UGUI/ugui_textbox.h:
