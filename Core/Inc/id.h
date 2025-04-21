@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define ANCHOR_IDX 0 // Which anchor are we flashing?
+#define ANCHOR_IDX 4 // Which anchor are we flashing?
 #define TAG_IDX 0    // Which tag are we flashing?
 
 uint8_t anchor_addresses[] = {'0', '1',

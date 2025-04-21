@@ -126,7 +126,7 @@
       #define LCD_WIDTH  320
       #define LCD_HEIGHT 172
       #define LCD_X_SHIFT 0
-      #define LCD_Y_SHIFT 30
+      #define LCD_Y_SHIFT 34
     #endif
   #endif
 
